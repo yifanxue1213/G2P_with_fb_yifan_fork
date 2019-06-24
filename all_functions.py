@@ -62,7 +62,7 @@ def in_air_adaptation_fcn(model, babbling_kinematics, babbling_activations, numb
 	cum_kinematics = babbling_kinematics
 	cum_activations = babbling_activations
 	attempt_kinematics = create_sin_cos_kinematics_fcn(attempt_length=10, number_of_cycles=7)
-	kinematics_activations_show_fcn(vs_time=False, kinematics=attempt_kinematics)
+	#kinematics_activations_show_fcn(vs_time=False, kinematics=attempt_kinematics)
 	est_attempt_activations = estimate_activations_fcn(model=model, desired_kinematics=attempt_kinematics)
 	if (number_of_refinements == 0) and (Mj_render==True):
 		Mj_render_last_run = True
@@ -286,7 +286,7 @@ def systemID_input_gen_fcn(signal_duration_in_seconds, pass_chance, max_in, min_
 			gen_input[ii] = gen_input[ii-1]
 	return gen_input
 
-def inverse_mapping_fcn(kinematics, activations, **kwargs):
+def inverse_mapping_fcn(kinematics, activations, early_stopping=False, **kwargs):
 	"""
 	this function used the babbling data to create an inverse mapping using a
 	MLP NN
@@ -309,7 +309,7 @@ def inverse_mapping_fcn(kinematics, activations, **kwargs):
 			activation="logistic",
 			verbose=True,
 			warm_start=True,
-			early_stopping=False)
+			early_stopping=early_stopping)
 
 	model.fit(kinematics_train, activations_train)
 	#pickle.dump(model,open("mlp_model.sav", 'wb'))

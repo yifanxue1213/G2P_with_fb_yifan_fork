@@ -22,7 +22,7 @@ simplefilter(action='ignore', category=FutureWarning)
 desired_kinematics = create_sin_cos_kinematics_fcn(attempt_length = 10 , number_of_cycles = 7, timestep = 0.005)
 average_error = openloop_run_fcn(model=model, desired_kinematics=desired_kinematics, plot_outputs=False, Mj_render=False)
 print("average open-loop error is: ", average_error)
-average_error = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics, K=[20, 20], plot_outputs=False, Mj_render=False)
+average_error = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics, K=[10, 15], plot_outputs=False, Mj_render=False)
 print("average close-loop error is: ", average_error)
 #import pdb; pdb.set_trace()
 
