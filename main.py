@@ -6,18 +6,21 @@ from warnings import simplefilter
 from all_functions import *
 from feedback_functions import *
 
-def calculate_inputkinematics(current_positions_array, current_desired_velocity_array, desired_kinematics, K=10, timestep=.005):
+def calculate_inputkinematics(step_number, real_attempt_positions, desired_kinematics, K, timestep=.005):
 	#import pdb; pdb.set_trace()
-	q_desired =  desired_kinematics[np.ix_([0,3])]
-	q_dot_desired = desired_kinematics[np.ix_([1,4])]
-	q_error = q_desired - current_positions_array
+
+
+	#import pdb; pdb.set_trace()
+	q_desired =  desired_kinematics[step_number, np.ix_([0,3])][0]
+	q_dot_desired = desired_kinematics[step_number, np.ix_([1,4])][0]
+	q_error = q_desired - real_attempt_positions[step_number-1,:]
 	q_dot_in = q_dot_desired + K*q_error
-	q_double_dot_in = (q_dot_in - current_desired_velocity_array)/timestep
+	q_double_dot_in = [np.gradient(desired_kinematics[step_number-2:step_number+1,1],edge_order=1)[-1]/timestep, np.gradient(desired_kinematics[step_number-2:step_number+1,4],edge_order=1)[-1]/timestep]#desired_kinematics[step_number, np.ix_([2,5])][0]#
 	#import pdb; pdb.set_trace()
 	desired_kinematics = [q_desired[0], q_dot_in[0], q_double_dot_in[0], q_desired[1], q_dot_in[1], q_double_dot_in[1]]
 	return desired_kinematics
 
-def close_loop_run_fcn(model, desired_kinematics, K=10, plot_outputs=True, Mj_render=False, chassis_fix=True, timestep=.005):
+def close_loop_run_fcn(model, desired_kinematics, K, plot_outputs=True, Mj_render=False, chassis_fix=True, timestep=.005):
 	if chassis_fix:
 		Mj_model = load_model_from_path("./models/nmi_leg_w_chassis_fixed.xml")
 	else:
@@ -38,16 +41,18 @@ def close_loop_run_fcn(model, desired_kinematics, K=10, plot_outputs=True, Mj_re
 	sim.set_state(sim_state)
 	current_positions_array = sim.data.qpos[-2:]
 	for ii in range(number_of_task_samples):
-		if ii == 0:
-			input_kinematics[0,:] = desired_kinematics[0,:]
+		if ii < 2:
+			print(ii)
+			input_kinematics[ii,:] = desired_kinematics[ii,:]
 		else:
 			input_kinematics[ii,:] = calculate_inputkinematics(
-				current_positions_array = current_positions_array,
-				current_desired_velocity_array = current_desired_velocity_array,
-				desired_kinematics = desired_kinematics[ii,:],
+				step_number=ii,
+				real_attempt_positions=real_attempt_positions,
+				desired_kinematics=desired_kinematics,
 				K=K,
 				timestep=timestep)
 		est_activations[ii,:] = model.predict([input_kinematics[ii,:]])[0,:]
+		#import pdb; pdb.set_trace()
 		sim.data.ctrl[:] = est_activations[ii,:]
 		sim.step()
 		previous_positions_array = current_positions_array
@@ -90,9 +95,9 @@ simplefilter(action='ignore', category=FutureWarning)
 [model,cum_kinematics, cum_activations] = pickle.load(open("results/mlp_model.sav", 'rb')) # loading the model
 
 desired_kinematics = create_sin_cos_kinematics_fcn(attempt_length = 10 , number_of_cycles = 7, timestep = 0.005)
-average_error = open_loop_run_fcn(model=model, desired_kinematics=desired_kinematics, plot_outputs=False, Mj_render=False)
+average_error = open_loop_run_fcn(model=model, desired_kinematics=desired_kinematics, plot_outputs=True, Mj_render=False)
 print("average open-loop error is: ", average_error)
-average_error = close_loop_run_fcn(model=model, desired_kinematics=desired_kinematics, K=0, plot_outputs=False, Mj_render=False)
+average_error = close_loop_run_fcn(model=model, desired_kinematics=desired_kinematics, K=[2, 20], plot_outputs=True, Mj_render=False)
 print("average close-loop error is: ", average_error)
 #import pdb; pdb.set_trace()
 
