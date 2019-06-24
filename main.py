@@ -6,8 +6,18 @@ from warnings import simplefilter
 from all_functions import *
 from feedback_functions import *
 
+def calculate_inputkinematics(current_positions_array, current_desired_velocity_array, desired_kinematics, K=10, timestep=.005):
+	#import pdb; pdb.set_trace()
+	q_desired =  desired_kinematics[np.ix_([0,3])]
+	q_dot_desired = desired_kinematics[np.ix_([1,4])]
+	q_error = q_desired - current_positions_array
+	q_dot_in = q_dot_desired + K*q_error
+	q_double_dot_in = (q_dot_in - current_desired_velocity_array)/timestep
+	#import pdb; pdb.set_trace()
+	desired_kinematics = [q_desired[0], q_dot_in[0], q_double_dot_in[0], q_desired[1], q_dot_in[1], q_double_dot_in[1]]
+	return desired_kinematics
 
-def close_loop_run_fcn(model, desired_kinematics, plot_outputs=True, Mj_render=False, chassis_fix=True):
+def close_loop_run_fcn(model, desired_kinematics, K=10, plot_outputs=True, Mj_render=False, chassis_fix=True, timestep=.005):
 	if chassis_fix:
 		Mj_model = load_model_from_path("./models/nmi_leg_w_chassis_fixed.xml")
 	else:
@@ -26,15 +36,23 @@ def close_loop_run_fcn(model, desired_kinematics, plot_outputs=True, Mj_render=F
 	real_attempt_positions = np.zeros([number_of_task_samples,2])
 	real_attempt_activations = np.zeros([number_of_task_samples,3])
 	sim.set_state(sim_state)
+	current_positions_array = sim.data.qpos[-2:]
 	for ii in range(number_of_task_samples):
 		if ii == 0:
 			input_kinematics[0,:] = desired_kinematics[0,:]
 		else:
-			input_kinematics[ii,:] = desired_kinematics[ii,:]
+			input_kinematics[ii,:] = calculate_inputkinematics(
+				current_positions_array = current_positions_array,
+				current_desired_velocity_array = current_desired_velocity_array,
+				desired_kinematics = desired_kinematics[ii,:],
+				K=K,
+				timestep=timestep)
 		est_activations[ii,:] = model.predict([input_kinematics[ii,:]])[0,:]
 		sim.data.ctrl[:] = est_activations[ii,:]
 		sim.step()
+		previous_positions_array = current_positions_array
 		current_positions_array = sim.data.qpos[-2:]
+		current_desired_velocity_array = input_kinematics[ii, np.ix_([1,4])][0,:]#(current_positions_array - current_positions_array)/timestep
 		chassis_pos[ii]=sim.data.get_geom_xpos("Chassis_frame")[0]
 		#import pdb; pdb.set_trace()
 		real_attempt_positions[ii,:] = current_positions_array
@@ -42,7 +60,7 @@ def close_loop_run_fcn(model, desired_kinematics, plot_outputs=True, Mj_render=F
 		if Mj_render:
 			viewer.render()
 	real_attempt_kinematics = positions_to_kinematics_fcn(
-		real_attempt_positions[:,0], real_attempt_positions[:,1], timestep = 0.005)
+		real_attempt_positions[:,0], real_attempt_positions[:,1], timestep=timestep)
 	error0 = error_cal_fcn(desired_kinematics[:,0], real_attempt_kinematics[:,0])
 	error1 = error_cal_fcn(desired_kinematics[:,3], real_attempt_kinematics[:,3])
 	average_error = 0.5*(error0+error1)
@@ -57,7 +75,7 @@ def close_loop_run_fcn(model, desired_kinematics, plot_outputs=True, Mj_render=F
 		plt.xlabel("Sample #")
 		plt.show(block=True)
 	return average_error
-	
+
 simplefilter(action='ignore', category=FutureWarning)
 
 # [babbling_kinematics, babbling_activations] = babbling_fcn(simulation_minutes=5)
@@ -72,9 +90,9 @@ simplefilter(action='ignore', category=FutureWarning)
 [model,cum_kinematics, cum_activations] = pickle.load(open("results/mlp_model.sav", 'rb')) # loading the model
 
 desired_kinematics = create_sin_cos_kinematics_fcn(attempt_length = 10 , number_of_cycles = 7, timestep = 0.005)
-average_error = open_loop_run_fcn(model=model, desired_kinematics=desired_kinematics, plot_outputs=True, Mj_render=False)
+average_error = open_loop_run_fcn(model=model, desired_kinematics=desired_kinematics, plot_outputs=False, Mj_render=False)
 print("average open-loop error is: ", average_error)
-average_error = close_loop_run_fcn(model=model, desired_kinematics=desired_kinematics, plot_outputs=True, Mj_render=False)
+average_error = close_loop_run_fcn(model=model, desired_kinematics=desired_kinematics, K=0, plot_outputs=False, Mj_render=False)
 print("average close-loop error is: ", average_error)
 #import pdb; pdb.set_trace()
 
