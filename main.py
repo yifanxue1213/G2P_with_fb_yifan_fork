@@ -31,9 +31,7 @@ for cycle_duration_in_seconds, ii in zip(cycle_durations, range(test1_no)):
 	positions_to_kinematics_fcn(q0_filtered, q1_filtered, timestep = 0.005)
 	exp1_average_error_o[ii] = openloop_run_fcn(model=model, desired_kinematics=desired_kinematics, plot_outputs=False, Mj_render=False)
 	exp1_average_error_c[ii] = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics, K=[10, 15], plot_outputs=False, Mj_render=False) # K = [10, 15]
-plt.figure()
-plt.plot(cycle_durations, exp1_average_error_o, cycle_durations, exp1_average_error_c)
-plt.show(block=True)
+
 
 test2_no = 50
 exp2_average_error_o = np.zeros(test2_no,)
@@ -44,9 +42,7 @@ for ii in range(test2_no):
 	desired_kinematics = positions_to_kinematics_fcn(q0_filtered, q1_filtered, timestep = 0.005)
 	exp2_average_error_o[ii] = openloop_run_fcn(model=model, desired_kinematics=desired_kinematics, plot_outputs=False, Mj_render=False)
 	exp2_average_error_c[ii] = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics, K=[10, 15], plot_outputs=False, Mj_render=False) # K = [10, 15]
-plt.figure()
-plt.plot(range(test2_no), exp2_average_error_o, range(test2_no), exp2_average_error_c)
-plt.show(block=True)
+
 
 test3_no = 50
 exp3_average_error_o = np.zeros(test3_no,)
@@ -57,7 +53,26 @@ for ii in range(test3_no):
 	desired_kinematics = positions_to_kinematics_fcn(q0, q1, timestep = 0.005)
 	exp3_average_error_o[ii] = openloop_run_fcn(model=model, desired_kinematics=desired_kinematics, plot_outputs=False, Mj_render=False)
 	exp3_average_error_c[ii] = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics, K=[10, 15], plot_outputs=False, Mj_render=False) # K = [10, 15]
+
+## plotting the results
+plt.figure()
+plt.plot(cycle_durations, exp1_average_error_o, cycle_durations, exp1_average_error_c)
+plt.show(block=True)
+
+plt.figure()
+plt.plot(range(test2_no), exp2_average_error_o, range(test2_no), exp2_average_error_c)
+plt.show(block=True)
+
 plt.figure()
 plt.plot(range(test3_no), exp3_average_error_o, range(test3_no), exp3_average_error_c)
 plt.show(block=True)
+
+##
+
+
+
+
+
+
+
 #import pdb; pdb.set_trace()
