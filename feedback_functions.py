@@ -101,3 +101,19 @@ def openloop_run_fcn(model, desired_kinematics, plot_outputs=False, Mj_render=Fa
 		plt.xlabel("Sample #")
 		plt.show(block=True)
 	return average_error
+
+
+
+
+
+
+
+
+def p2p_positions_gen_fcn(low, high, number_of_positions, duration_of_each_position, timestep):
+	sample_no_of_each_position = duration_of_each_position / timestep
+	random_array = np.zeros(int(np.round(number_of_positions*sample_no_of_each_position)),)
+	for ii in range(number_of_positions):
+		random_value = ((high-low)*(np.random.rand(1)[0])) + low
+		random_array_1position = np.repeat(random_value,sample_no_of_each_position)
+		random_array[int(ii*sample_no_of_each_position):int((ii+1)*sample_no_of_each_position)] = random_array_1position
+	return random_array
