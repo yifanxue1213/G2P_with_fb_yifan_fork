@@ -7,6 +7,7 @@ from matplotlib import pyplot as plt
 #import pickle
 import os
 from copy import deepcopy
+from mujoco_py.generated import const
 from all_functions import *
 
 def calculate_closeloop_inputkinematics(step_number, real_attempt_positions, desired_kinematics, K, gradient_edge_order=1, timestep=.005):
@@ -21,7 +22,7 @@ def calculate_closeloop_inputkinematics(step_number, real_attempt_positions, des
 	desired_kinematics = [q_desired[0], q_dot_in[0], q_double_dot_in[0], q_desired[1], q_dot_in[1], q_double_dot_in[1]]
 	return desired_kinematics
 
-def closeloop_run_fcn(model, desired_kinematics, K, plot_outputs=True, Mj_render=False, chassis_fix=True, timestep=.005):
+def closeloop_run_fcn(model, desired_kinematics, K, model_ver=0, plot_outputs=True, Mj_render=False, timestep=.005):
 	est_activations = estimate_activations_fcn(model, desired_kinematics)
 	number_of_task_samples = desired_kinematics.shape[0]
 	chassis_pos=np.zeros(number_of_task_samples,)
@@ -29,15 +30,13 @@ def closeloop_run_fcn(model, desired_kinematics, K, plot_outputs=True, Mj_render
 	real_attempt_positions = np.zeros([number_of_task_samples,2])
 	real_attempt_activations = np.zeros([number_of_task_samples,3])
 
-	if chassis_fix:
-		Mj_model = load_model_from_path("./models/nmi_leg_w_chassis_fixed.xml")
-	else:
-		Mj_model = load_model_from_path("./models/nmi_leg_w_chassis_walk.xml")
+	Mj_model = load_model_from_path("./models/nmi_leg_w_chassis_v{}.xml".format(model_ver))
 	sim = MjSim(Mj_model)
 
 	if Mj_render:
 		viewer = MjViewer(sim)
-
+		# viewer.cam.fixedcamid += 1
+		# viewer.cam.type = const.CAMERA_FIXED
 	sim_state = sim.get_state()
 	control_vector_length=sim.data.ctrl.__len__()
 	print("control_vector_length: "+str(control_vector_length))
@@ -84,9 +83,9 @@ def closeloop_run_fcn(model, desired_kinematics, K, plot_outputs=True, Mj_render
 		plt.show(block=True)
 	return average_error
 
-def openloop_run_fcn(model, desired_kinematics, plot_outputs=False, Mj_render=False):
+def openloop_run_fcn(model, desired_kinematics, model_ver=0, plot_outputs=False, Mj_render=False):
 	est_activations = estimate_activations_fcn(model, desired_kinematics)
-	[real_attempt_kinematics, real_attempt_activations, chassis_pos] = run_activations_fcn(est_activations, chassis_fix=True, timestep=0.005, Mj_render=Mj_render)
+	[real_attempt_kinematics, real_attempt_activations, chassis_pos] = run_activations_fcn(est_activations, model_ver=model_ver, timestep=0.005, Mj_render=Mj_render)
 	error0 = error_cal_fcn(desired_kinematics[:,0], real_attempt_kinematics[:,0])
 	error1 = error_cal_fcn(desired_kinematics[:,3], real_attempt_kinematics[:,3])
 	average_error = 0.5*(error0+error1)

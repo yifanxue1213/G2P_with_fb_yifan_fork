@@ -1,0 +1,6 @@
+Wed Jun 26 00:00:23 2019
+ERROR: Stack overflow
+
+Wed Jun 26 02:01:13 2019
+ERROR: Fixed camera id is outside valid range
+

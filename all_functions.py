@@ -7,8 +7,14 @@ from matplotlib import pyplot as plt
 #import pickle
 import os
 from copy import deepcopy
+from mujoco_py.generated import const
 ################################################
 #Functions for main tests
+#model versions for the nmi_leg_w_chassis:
+#	v0: fixed on air
+#	v1: touching the floor and can move in x axis
+#	v2: touching the floor and can move in x and y axes (cannot rotate, however)
+
 def learn_to_move_fcn(model, cum_kinematics, cum_activations, reward_thresh=7, refinement = False, Mj_render = False):
 	
 	prev_reward = np.array([0])
@@ -23,7 +29,7 @@ def learn_to_move_fcn(model, cum_kinematics, cum_activations, reward_thresh=7, r
 			exploitation_run_no+=1
 		new_features = gen_features_fcn(reward_thresh=reward_thresh, best_reward_so_far=best_reward_so_far, best_features_so_far=best_features_so_far)# .9*np.ones([9,])#
 		[prev_reward, attempt_kinematics, est_attempt_activations, real_attempt_kinematics, real_attempt_activations] = \
-			feat_to_run_attempt_fcn(features=new_features, model=model,feat_show=False, chassis_fix=False)
+			feat_to_run_attempt_fcn(features=new_features, model=model,feat_show=False, model_ver=1)
 		
 		#kinematics_activations_show_fcn(vs_time=True, kinematics=attempt_kinematics,activations=est_attempt_activations)
 		#kinematics_activations_show_fcn(vs_time=True, kinematics=real_attempt_kinematics,activations=real_attempt_activations)
@@ -47,18 +53,18 @@ def learn_to_move_fcn(model, cum_kinematics, cum_activations, reward_thresh=7, r
 	#import pdb; pdb.set_trace()
 	return best_reward_so_far, all_rewards
 
-def feat_to_run_attempt_fcn(features, model,feat_show=False,Mj_render=False, chassis_fix=False):
+def feat_to_run_attempt_fcn(features, model,feat_show=False,Mj_render=False, model_ver=1):
 	[q0_filtered, q1_filtered] = feat_to_positions_fcn(features, show=feat_show)
 	step_kinematics = positions_to_kinematics_fcn(q0_filtered, q1_filtered, timestep = 0.005)
 	attempt_kinematics = step_to_attempt_kinematics_fcn(step_kinematics=step_kinematics)
 	est_attempt_activations = estimate_activations_fcn(model=model, desired_kinematics=attempt_kinematics)
-	[real_attempt_kinematics, real_attempt_activations, chassis_pos]=run_activations_fcn(est_attempt_activations, chassis_fix=chassis_fix, Mj_render=Mj_render)
+	[real_attempt_kinematics, real_attempt_activations, chassis_pos]=run_activations_fcn(est_attempt_activations, model_ver=model_ver, Mj_render=Mj_render)
 	prev_reward = chassis_pos[-1]
 	return prev_reward, attempt_kinematics, est_attempt_activations, real_attempt_kinematics, real_attempt_activations
 
 def in_air_adaptation_fcn(model, babbling_kinematics, babbling_activations, number_of_refinements=10, Mj_render=False):
 	Mj_render_last_run = False
-	chassis_fix = True
+	model_ver = 0
 	cum_kinematics = babbling_kinematics
 	cum_activations = babbling_activations
 	attempt_kinematics = create_sin_cos_kinematics_fcn(attempt_length=10, number_of_cycles=7)
@@ -66,7 +72,7 @@ def in_air_adaptation_fcn(model, babbling_kinematics, babbling_activations, numb
 	est_attempt_activations = estimate_activations_fcn(model=model, desired_kinematics=attempt_kinematics)
 	if (number_of_refinements == 0) and (Mj_render==True):
 		Mj_render_last_run = True
-	[real_attempt_kinematics, real_attempt_activations, chassis_pos] = run_activations_fcn(est_attempt_activations, chassis_fix = chassis_fix, Mj_render=Mj_render_last_run)
+	[real_attempt_kinematics, real_attempt_activations, chassis_pos] = run_activations_fcn(est_attempt_activations, model_ver = model_ver, Mj_render=Mj_render_last_run)
 	error0 = np.array([error_cal_fcn(attempt_kinematics[:,0], real_attempt_kinematics[:,0])])
 	error1 = np.array([error_cal_fcn(attempt_kinematics[:,3], real_attempt_kinematics[:,3])])
 	average_error = (error0+error1)/2
@@ -77,7 +83,7 @@ def in_air_adaptation_fcn(model, babbling_kinematics, babbling_activations, numb
 		[cum_kinematics, cum_activations] = concatinate_data_fcn(cum_kinematics, cum_activations, real_attempt_kinematics, real_attempt_activations)
 		model = inverse_mapping_fcn(kinematics=cum_kinematics, activations=cum_activations, prior_model=model)
 		est_attempt_activations = estimate_activations_fcn(model=model, desired_kinematics=attempt_kinematics)
-		[real_attempt_kinematics, real_attempt_activations, chassis_pos] = run_activations_fcn(est_attempt_activations, chassis_fix = chassis_fix, Mj_render=Mj_render_last_run)
+		[real_attempt_kinematics, real_attempt_activations, chassis_pos] = run_activations_fcn(est_attempt_activations, model_ver = model_ver, Mj_render=Mj_render_last_run)
 		error0 = np.append(error0, error_cal_fcn(attempt_kinematics[:,0], real_attempt_kinematics[:,0]))
 		error1 = np.append(error1, error_cal_fcn(attempt_kinematics[:,3], real_attempt_kinematics[:,3]))
 		average_error = np.append(average_error, (error0[-1]+error1[-1])/2)
@@ -192,7 +198,7 @@ def babbling_fcn(simulation_minutes=5):
 	"""
 	np.random.seed(2) # to get consistent results for debugging purposes
 
-	model = load_model_from_path("./models/nmi_leg_w_chassis_fixed.xml")
+	model = load_model_from_path("./models/nmi_leg_w_chassis_v0.xml")
 	sim = MjSim(model)
 
 	# viewer = MjViewer(sim)
@@ -231,7 +237,7 @@ def babbling_fcn(simulation_minutes=5):
 	kinematics_activations_show_fcn(activations=babbling_activations)
 	[babbling_kinematics, babbling_activations, chassis_pos] = \
 	run_activations_fcn(
-		babbling_activations, chassis_fix=True, timestep=0.005, Mj_render=False
+		babbling_activations, model_ver=0, timestep=0.005, Mj_render=False
 		)
 
 	# for ii in range(run_samples):
@@ -440,7 +446,7 @@ def estimate_activations_fcn(model, desired_kinematics):
 	# plt.show(block=False)
 	return est_activations
 
-def run_activations_fcn(est_activations, chassis_fix=True, timestep=0.005, Mj_render=False):
+def run_activations_fcn(est_activations, model_ver=0, timestep=0.005, Mj_render=False):
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! the q0 is now the chasis pos. needs to be fixed
 	"""
 	this function runs the predicted activations generatred from running
@@ -452,13 +458,12 @@ def run_activations_fcn(est_activations, chassis_fix=True, timestep=0.005, Mj_re
 	#task_kinematics=np.load("task_kinematics.npy")
 	#est_task_activations=np.load("est_task_activations.npy")
 
-	if chassis_fix:
-		model = load_model_from_path("./models/nmi_leg_w_chassis_fixed.xml")
-	else:
-		model = load_model_from_path("./models/nmi_leg_w_chassis_walk.xml")
+	model = load_model_from_path("./models/nmi_leg_w_chassis_v{}.xml".format(model_ver))
 	sim = MjSim(model)
 	if Mj_render:
 		viewer = MjViewer(sim)
+		# viewer.cam.fixedcamid += 1
+		# viewer.cam.type = const.CAMERA_FIXED
 	sim_state = sim.get_state()
 	control_vector_length=sim.data.ctrl.__len__()
 	print("control_vector_length: "+str(control_vector_length))
