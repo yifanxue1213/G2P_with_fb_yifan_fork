@@ -10,25 +10,28 @@ from copy import deepcopy
 from mujoco_py.generated import const
 from all_functions import *
 
-def calculate_closeloop_inputkinematics(step_number, real_attempt_positions, desired_kinematics, K, gradient_edge_order=1, timestep=.005):
+def calculate_closeloop_inputkinematics(step_number, real_attempt_positions, desired_kinematics, q_error_cum, K, I, gradient_edge_order=1, timestep=.005):
 	q_desired =  desired_kinematics[step_number, np.ix_([0,3])][0]
 	q_dot_desired = desired_kinematics[step_number, np.ix_([1,4])][0]
 	q_error = q_desired - real_attempt_positions[step_number-1,:]
-	q_dot_in = q_dot_desired + K*q_error
+	q_error_cum[step_number,:] = q_error
+	#import pdb; pdb.set_trace()
+	q_dot_in = q_dot_desired + K*q_error + I*q_error_cum.sum(axis=0)
 	q_double_dot_in = [
 		np.gradient(desired_kinematics[step_number-gradient_edge_order:step_number+1,1],edge_order=gradient_edge_order)[-1]/timestep,
 		np.gradient(desired_kinematics[step_number-gradient_edge_order:step_number+1,4],edge_order=gradient_edge_order)[-1]/timestep]
 		#desired_kinematics[step_number, np.ix_([2,5])][0]#
 	desired_kinematics = [q_desired[0], q_dot_in[0], q_double_dot_in[0], q_desired[1], q_dot_in[1], q_double_dot_in[1]]
-	return desired_kinematics
+	return desired_kinematics, q_error_cum
 
-def closeloop_run_fcn(model, desired_kinematics, K, model_ver=0, plot_outputs=True, Mj_render=False, timestep=.005):
+def closeloop_run_fcn(model, desired_kinematics, K, I, model_ver=0, plot_outputs=True, Mj_render=False, timestep=.005):
 	est_activations = estimate_activations_fcn(model, desired_kinematics)
 	number_of_task_samples = desired_kinematics.shape[0]
 	chassis_pos=np.zeros(number_of_task_samples,)
 	input_kinematics = np.zeros(desired_kinematics.shape)
 	real_attempt_positions = np.zeros([number_of_task_samples,2])
 	real_attempt_activations = np.zeros([number_of_task_samples,3])
+	q_error_cum = np.zeros([number_of_task_samples,2]) # sample error history
 
 	Mj_model = load_model_from_path("./models/nmi_leg_w_chassis_v{}.xml".format(model_ver))
 	sim = MjSim(Mj_model)
@@ -48,11 +51,13 @@ def closeloop_run_fcn(model, desired_kinematics, K, model_ver=0, plot_outputs=Tr
 			print(ii)
 			input_kinematics[ii,:] = desired_kinematics[ii,:]
 		else:
-			input_kinematics[ii,:] = calculate_closeloop_inputkinematics(
+			[input_kinematics[ii,:], q_error_cum] = calculate_closeloop_inputkinematics(
 				step_number=ii,
 				real_attempt_positions=real_attempt_positions,
 				desired_kinematics=desired_kinematics,
+				q_error_cum=q_error_cum,
 				K=K,
+				I=I,
 				gradient_edge_order=gradient_edge_order,
 				timestep=timestep)
 		est_activations[ii,:] = model.predict([input_kinematics[ii,:]])[0,:]
@@ -116,3 +121,6 @@ def p2p_positions_gen_fcn(low, high, number_of_positions, duration_of_each_posit
 		random_array_1position = np.repeat(random_value,sample_no_of_each_position)
 		random_array[int(ii*sample_no_of_each_position):int((ii+1)*sample_no_of_each_position)] = random_array_1position
 	return random_array
+
+
+#import pdb; pdb.set_trace()
