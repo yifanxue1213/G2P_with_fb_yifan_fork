@@ -4,6 +4,7 @@ from numpy import matlib
 from scipy import signal
 from sklearn.neural_network import MLPRegressor
 from matplotlib import pyplot as plt
+import matplotlib.lines as mlines
 #import pickle
 import os
 from copy import deepcopy
@@ -106,13 +107,6 @@ def openloop_run_fcn(model, desired_kinematics, model_ver=0, plot_outputs=False,
 		plt.show(block=True)
 	return average_error
 
-
-
-
-
-
-
-
 def p2p_positions_gen_fcn(low, high, number_of_positions, duration_of_each_position, timestep):
 	sample_no_of_each_position = duration_of_each_position / timestep
 	random_array = np.zeros(int(np.round(number_of_positions*sample_no_of_each_position)),)
@@ -122,5 +116,69 @@ def p2p_positions_gen_fcn(low, high, number_of_positions, duration_of_each_posit
 		random_array[int(ii*sample_no_of_each_position):int((ii+1)*sample_no_of_each_position)] = random_array_1position
 	return random_array
 
+def plot_comparison_figures_fcn(errors_all):
+	trial_number = errors_all[0].shape[1]
+	plt.figure()
+	plt.plot(np.linspace(.1,10,trial_number), errors_all[0][0,:], np.linspace(.1,10,trial_number), errors_all[0][1,:], marker='.')
+
+	plt.ylim(0,.75)
+	ax = plt.gca()
+	xmin, xmax = ax.get_xbound()
+	mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[0][0,:].mean(),errors_all[0][0,:].mean()],color='C0', linestyle='--', alpha=.7)
+	ax.add_line(mean_error_wo)
+	mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[0][1,:].mean(),errors_all[0][1,:].mean()],color='C1', linestyle='--', alpha=.7)
+	ax.add_line(mean_error_wf)
+	plt.title("Error as a function of cycle period")
+	plt.legend(["without feedback",'with feedback'])
+	plt.xlabel("cycle period (s)")
+	plt.ylabel("error (rads)")
+	plt.savefig('./results/P_I/exp1.png')
+	plt.show()
+
+	plt.figure()
+	plt.plot(range(errors_all[1][0,:].shape[0]), errors_all[1][0,:], range(errors_all[1][0,:].shape[0]), errors_all[1][1,:], marker='.')
+	plt.ylim(0,.75)
+	ax = plt.gca()
+	xmin, xmax = ax.get_xbound()
+	mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[1][0,:].mean(),errors_all[1][0,:].mean()],color='C0', linestyle='--', alpha=.7)
+	ax.add_line(mean_error_wo)
+	mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[1][1,:].mean(),errors_all[1][1,:].mean()],color='C1', linestyle='--', alpha=.7)
+	ax.add_line(mean_error_wf)
+	plt.title("Error value over a set of cyclical tasks")
+	plt.legend(["without feedback",'with feedback'])
+	plt.xlabel("trial #")
+	plt.ylabel("error (rads)")
+	plt.savefig('./results/P_I/exp2.png')
+	plt.show()
+
+	plt.figure()
+	plt.plot(range(errors_all[2][0,:].shape[0]), errors_all[2][0,:], range(errors_all[2][0,:].shape[0]), errors_all[2][1,:], marker='.')
+	plt.ylim(0,.75)
+	ax = plt.gca()
+	xmin, xmax = ax.get_xbound()
+	mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[2][0,:].mean(),errors_all[2][0,:].mean()],color='C0', linestyle='--', alpha=.7)
+	ax.add_line(mean_error_wo)
+	mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[2][1,:].mean(),errors_all[2][1,:].mean()],color='C1', linestyle='--', alpha=.7)
+	ax.add_line(mean_error_wf)
+	plt.title("Error value over a set of point-to-point tasks")
+	plt.legend(["without feedback",'with feedback'])
+	plt.xlabel("trial #")
+	plt.ylabel("error (rads)")
+	plt.savefig('./results/P_I/exp3.png')
+	plt.show()
+	# plotting mean error for each experiment
+	plt.figure()
+	plt.bar(range(3), [errors_all[0][0,:].mean(axis=0), errors_all[1][0,:].mean(axis=0), errors_all[2][0,:].mean(axis=0)])
+	plt.bar(range(3), [errors_all[0][1,:].mean(axis=0), errors_all[1][1,:].mean(axis=0), errors_all[2][1,:].mean(axis=0)])
+	plt.ylim(0,.5)
+	plt.legend(["without feedback",'with feedback'])
+	plt.ylabel("mean error (rads)")
+	plt.xticks(range(3),('cycle period','cyclical','point-to-point'))
+	plt.savefig('./results/P_I/mean_errors.png')
+	plt.show()
+	# errors_all = [exp2_average_error]
+	# plt.figure()
+	# plt.plot(range(errors_all[0][0,:].shape[0]), errors_all[0][0,:], range(errors_all[0][0,:].shape[0]), errors_all[0][1,:])
+	# plt.show(block=True)
 
 #import pdb; pdb.set_trace()

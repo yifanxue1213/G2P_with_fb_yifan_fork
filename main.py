@@ -77,32 +77,8 @@ simplefilter(action='ignore', category=FutureWarning)
 # exp4_average_error[1,:] = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics,  P=P, I=I, model_ver=2, plot_outputs=True, Mj_render=True)
 
 # errors_all = [exp1_average_error, exp2_average_error, exp3_average_error, exp4_average_error]
-# pickle.dump([errors_all],open("results/feedback_errors_P.sav", 'wb')) # saving the results with only P
+# pickle.dump([errors_all],open("results/feedback_errors_.sav", 'wb')) # saving the results with only P
 [errors_all] = pickle.load(open("results/feedback_errors_P_I.sav", 'rb')) # loading the results with only P
-trial_number = errors_all[0].shape[1]
-plt.figure()
-plt.plot(np.linspace(.1,10,trial_number), errors_all[0][0,:], np.linspace(.1,10,trial_number), errors_all[0][1,:])
-plt.savefig('./results/exp1.png')
-plt.show()
-
-plt.figure()
-plt.plot(range(errors_all[1][0,:].shape[0]), errors_all[1][0,:], range(errors_all[1][0,:].shape[0]), errors_all[1][1,:])
-plt.savefig('./results/exp2.png')
-plt.show()
-
-plt.figure()
-plt.plot(range(errors_all[2][0,:].shape[0]), errors_all[2][0,:], range(errors_all[2][0,:].shape[0]), errors_all[2][1,:])
-plt.savefig('./results/exp3.png')
-plt.show()
-# plotting mean error for each experiment
-plt.figure()
-plt.bar(range(3), [errors_all[0][0,:].mean(axis=0), errors_all[1][0,:].mean(axis=0), errors_all[2][0,:].mean(axis=0)])
-plt.bar(range(3), [errors_all[0][1,:].mean(axis=0), errors_all[1][1,:].mean(axis=0), errors_all[2][1,:].mean(axis=0)])
-plt.savefig('./results/mean_errors.png')
-plt.show()
-# errors_all = [exp2_average_error]
-# plt.figure()
-# plt.plot(range(errors_all[0][0,:].shape[0]), errors_all[0][0,:], range(errors_all[0][0,:].shape[0]), errors_all[0][1,:])
-# plt.show(block=True)
+plot_comparison_figures_fcn(errors_all)
 
 #import pdb; pdb.set_trace()
