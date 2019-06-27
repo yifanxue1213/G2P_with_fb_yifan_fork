@@ -20,8 +20,9 @@ simplefilter(action='ignore', category=FutureWarning)
 # [model,cum_kinematics, cum_activations] = pickle.load(open("results/mlp_model.sav", 'rb')) # loading the model
 # np.random.seed(0)
 
-# P = [10, 15]
-# I = [0, 0]
+# timestep = 0.005
+# P = np.array([10, 15])
+# I = np.array([20, 40])
 
 # trial_number = 50
 
@@ -68,17 +69,17 @@ simplefilter(action='ignore', category=FutureWarning)
 # q1 = p2p_positions_gen_fcn(low=-np.pi/2, high=-np.pi/2, number_of_positions=1, duration_of_each_position=1, timestep=.005)
 # q1 = np.append(q1,p2p_positions_gen_fcn(low=0, high=0, number_of_positions=1, duration_of_each_position=14, timestep=.005))
 # desired_kinematics = positions_to_kinematics_fcn(q0, q1, timestep = 0.005)
-# exp4_average_error[0,:] = openloop_run_fcn(model=model, desired_kinematics=desired_kinematics, model_ver=2, plot_outputs=True, Mj_render=True)
+# exp4_average_error[0,:] = openloop_run_fcn(model=model, desired_kinematics=desired_kinematics, model_ver=2, plot_outputs=False, Mj_render=False)
 # q0 = p2p_positions_gen_fcn(low=np.pi/3, high=np.pi/3, number_of_positions=1, duration_of_each_position=1, timestep=.005)
 # q0 = np.append(q0,p2p_positions_gen_fcn(low=0, high=0, number_of_positions=1, duration_of_each_position=4, timestep=.005))
 # q1 = p2p_positions_gen_fcn(low=-np.pi/2, high=-np.pi/2, number_of_positions=1, duration_of_each_position=1, timestep=.005)
 # q1 = np.append(q1,p2p_positions_gen_fcn(low=0, high=0, number_of_positions=1, duration_of_each_position=4, timestep=.005))
 # desired_kinematics = positions_to_kinematics_fcn(q0, q1, timestep = 0.005)
-# exp4_average_error[1,:] = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics,  P=P, I=I, model_ver=2, plot_outputs=True, Mj_render=True)
+# exp4_average_error[1,:] = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics,  P=P, I=I, model_ver=2, plot_outputs=False, Mj_render=False)
 
 # errors_all = [exp1_average_error, exp2_average_error, exp3_average_error, exp4_average_error]
 # pickle.dump([errors_all],open("results/feedback_errors_.sav", 'wb')) # saving the results with only P
-[errors_all] = pickle.load(open("results/feedback_errors_P_I.sav", 'rb')) # loading the results with only P
+[errors_all] = pickle.load(open("results/P_I/feedback_errors_P_I.sav", 'rb')) # loading the results with only P
 plot_comparison_figures_fcn(errors_all)
 
 #import pdb; pdb.set_trace()

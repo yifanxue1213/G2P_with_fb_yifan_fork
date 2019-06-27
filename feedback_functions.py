@@ -17,7 +17,7 @@ def calculate_closeloop_inputkinematics(step_number, real_attempt_positions, des
 	q_error = q_desired - real_attempt_positions[step_number-1,:]
 	q_error_cum[step_number,:] = q_error
 	#import pdb; pdb.set_trace()
-	q_dot_in = q_dot_desired + np.array(P)*q_error + np.array(I)*q_error_cum.sum(axis=0)
+	q_dot_in = q_dot_desired + np.array(P)*q_error + np.array(I)*(q_error_cum.sum(axis=0)*timestep)
 	q_double_dot_in = [
 		np.gradient(desired_kinematics[step_number-gradient_edge_order:step_number+1,1],edge_order=gradient_edge_order)[-1]/timestep,
 		np.gradient(desired_kinematics[step_number-gradient_edge_order:step_number+1,4],edge_order=gradient_edge_order)[-1]/timestep]
