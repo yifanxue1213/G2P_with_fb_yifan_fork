@@ -11,22 +11,18 @@ from copy import deepcopy
 from mujoco_py.generated import const
 from all_functions import *
 
-def calculate_closeloop_inputkinematics(step_number, real_attempt_positions, desired_kinematics, input_kinematics, q_error_cum, P, I, gradient_edge_order=1, timestep=.005):
+def calculate_closeloop_inputkinematics(step_number, real_attempt_positions, desired_kinematics, q_error_cum, P, I, gradient_edge_order=1, timestep=.005):
 	q_desired =  desired_kinematics[step_number, np.ix_([0,3])][0]
 	q_dot_desired = desired_kinematics[step_number, np.ix_([1,4])][0]
 	q_error = q_desired - real_attempt_positions[step_number-1,:]
 	q_error_cum[step_number,:] = q_error
 	#import pdb; pdb.set_trace()
 	q_dot_in = q_dot_desired + np.array(P)*q_error + np.array(I)*(q_error_cum.sum(axis=0)*timestep)
-	# q_double_dot_in = [
-	# 	np.gradient(desired_kinematics[step_number-gradient_edge_order:step_number+1,1],edge_order=gradient_edge_order)[-1]/timestep,
-	# 	np.gradient(desired_kinematics[step_number-gradient_edge_order:step_number+1,4],edge_order=gradient_edge_order)[-1]/timestep]
-	# 	##desired_kinematics[step_number, np.ix_([2,5])][0]#
-	q_double_dot_in = [(q_dot_in[0]-input_kinematics[step_number-1,1])/timestep, (q_dot_in[1]-input_kinematics[step_number-1,4])/timestep]
+	q_double_dot_in = [
+		np.gradient(desired_kinematics[step_number-gradient_edge_order:step_number+1,1],edge_order=gradient_edge_order)[-1]/timestep,
+		np.gradient(desired_kinematics[step_number-gradient_edge_order:step_number+1,4],edge_order=gradient_edge_order)[-1]/timestep]
+		#desired_kinematics[step_number, np.ix_([2,5])][0]#
 	input_kinematics = [q_desired[0], q_dot_in[0], q_double_dot_in[0], q_desired[1], q_dot_in[1], q_double_dot_in[1]]
-	# print("input:   ", input_kinematics)
-	# print("desired: ", desired_kinematics[step_number,:])
-
 	# There are multiple ways of calculating q_double_dot:
 		# 1- d(v_input(last_step)-v_desired(last_step))/dt
 		# 2- d(v_input(current)-v_observed(last_step))/dt
@@ -37,8 +33,6 @@ def calculate_closeloop_inputkinematics(step_number, real_attempt_positions, des
 		# We observed that using the acceleration values coming from the feedforward system (desired q_double_dot) works better than the alternatives
 		# however, acceleration value can be set differently for other specific goals. For example, for velocity tracking (the main focus of this 
 		# project is position tracking), acceleration can be set corresponding to the velocity error to compensate for this error. 
-		
-
 	return input_kinematics, q_error_cum
 
 def closeloop_run_fcn(model, desired_kinematics, P, I, model_ver=0, plot_outputs=True, Mj_render=False, timestep=.005):
@@ -72,7 +66,6 @@ def closeloop_run_fcn(model, desired_kinematics, P, I, model_ver=0, plot_outputs
 				step_number=ii,
 				real_attempt_positions=real_attempt_positions,
 				desired_kinematics=desired_kinematics,
-				input_kinematics=input_kinematics,
 				q_error_cum=q_error_cum,
 				P=P,
 				I=I,

@@ -20,8 +20,8 @@ simplefilter(action='ignore', category=FutureWarning)
 [model,cum_kinematics, cum_activations] = pickle.load(open("results/mlp_model.sav", 'rb')) # loading the model
 np.random.seed(0)
 
-P = np.array([10, 15])*.5
-I = np.array([20, 40])*0.15
+P = np.array([10, 15])
+I = np.array([2, 6])
 trial_number = 50
 
 features=np.ones(10,)
