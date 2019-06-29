@@ -4,7 +4,7 @@
     Ver 1 can move on x axis
     Ver 2 can move on x axis and y axis (y with a spring damper)
     Ver 3 way havier; can move on x axis and y axis (both freely)  
-    Ver 4 similar to V0 but with a weight at the endpoint (still working on)
+    Ver 4 similar to 1 but with higher friction
     -->
 
 
