@@ -467,7 +467,6 @@ def run_activations_fcn(est_activations, model_ver=0, timestep=0.005, Mj_render=
 	sim_state = sim.get_state()
 	control_vector_length=sim.data.ctrl.__len__()
 	print("control_vector_length: "+str(control_vector_length))
-
 	number_of_task_samples=est_activations.shape[0]
 
 	real_attempt_positions = np.zeros((number_of_task_samples,2))

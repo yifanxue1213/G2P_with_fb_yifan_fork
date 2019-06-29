@@ -1,12 +1,12 @@
 <mujoco model="2-link 6-muscle arm">
-    <!--  Copyright © 2018, Roboti LLC
-
-          This file is licensed under the MuJoCo Resource License (the "License").
-          You may not use this file except in compliance with the License.
-          You may obtain a copy of the License at
-
-            https://www.roboti.us/resourcelicense.txt
+    <!--  Vers
+    Ver 0 fixed on air
+    Ver 1 can move on x axis
+    Ver 2 can move on x axis and y axis (y with a spring damper)
+    Ver 3 way havier; can move on x axis and y axis (both freely)  
+    Ver 4 similar to V0 but with a weight at the endpoint (still working on)
     -->
+
 
     <option timestep="0.005" iterations="50" solver="Newton" tolerance="1e-10"/>
 

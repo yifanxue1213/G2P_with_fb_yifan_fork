@@ -22,9 +22,9 @@ np.random.seed(0)
 
 P = np.array([10, 15])
 I = np.array([2, 6])
-trial_number = 2
+trial_number = 5
 
-experiments_switch=[0, 0, 1, 0]
+experiments_switch=[0, 0, 0, 0, 1]
 for ii in range(len(experiments_switch)):
 	globals()["exp{}_average_error".format(ii+1)]=np.zeros([2,1])
 
@@ -75,17 +75,30 @@ if experiments_switch[3] ==1:
 	q1 = p2p_positions_gen_fcn(low=-np.pi/2, high=-np.pi/2, number_of_positions=1, duration_of_each_position=1, timestep=.005)
 	q1 = np.append(q1,p2p_positions_gen_fcn(low=0, high=0, number_of_positions=1, duration_of_each_position=14, timestep=.005))
 	desired_kinematics = positions_to_kinematics_fcn(q0, q1, timestep = 0.005)
-	exp4_average_error[0,:] = openloop_run_fcn(model=model, desired_kinematics=desired_kinematics, model_ver=2, plot_outputs=False, Mj_render=False)
+	exp4_average_error[0,:] = openloop_run_fcn(model=model, desired_kinematics=desired_kinematics, model_ver=3, plot_outputs=False, Mj_render=False)
 	q0 = p2p_positions_gen_fcn(low=np.pi/3, high=np.pi/3, number_of_positions=1, duration_of_each_position=1, timestep=.005)
 	q0 = np.append(q0,p2p_positions_gen_fcn(low=0, high=0, number_of_positions=1, duration_of_each_position=4, timestep=.005))
 	q1 = p2p_positions_gen_fcn(low=-np.pi/2, high=-np.pi/2, number_of_positions=1, duration_of_each_position=1, timestep=.005)
 	q1 = np.append(q1,p2p_positions_gen_fcn(low=0, high=0, number_of_positions=1, duration_of_each_position=4, timestep=.005))
 	desired_kinematics = positions_to_kinematics_fcn(q0, q1, timestep = 0.005)
-	exp4_average_error[1,:] = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics,  P=P, I=I, model_ver=2, plot_outputs=False, Mj_render=False)
+	exp4_average_error[1,:] = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics,  P=P, I=I, model_ver=3, plot_outputs=False, Mj_render=False)
+
+if experiments_switch[4] == 1:
+	test5_no = 1
+	exp5_average_error = np.zeros([2,test5_no])
+	for ii in range(test5_no):
+		features = np.random.rand(10)*.8+.2
+		[q0_filtered, q1_filtered]  = feat_to_positions_fcn(features, timestep=0.005, cycle_duration_in_seconds = 4, show=False)
+		#import pdb; pdb.set_trace()
+		q0_filtered_10 = np.tile(q0_filtered,10)
+		q1_filtered_10 = np.tile(q1_filtered,10)
+		desired_kinematics = positions_to_kinematics_fcn(q0_filtered_10, q1_filtered_10, timestep = 0.005)
+		exp5_average_error[0,ii] = openloop_run_fcn(model=model, desired_kinematics=desired_kinematics, model_ver=4, plot_outputs=False, Mj_render=True)
+		exp5_average_error[1,ii] = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics, model_ver=4, P=P, I=I, plot_outputs=False, Mj_render=True) # K = [10, 15]
 
 errors_all = [exp1_average_error, exp2_average_error, exp3_average_error, exp4_average_error]
 pickle.dump([errors_all],open("results/feedback_errors_test.sav", 'wb')) # saving the results with only P
-[errors_all] = pickle.load(open("results/feedback_errors_test.sav", 'rb')) # loading the results with only P
-plot_comparison_figures_fcn(errors_all)
+# [errors_all] = pickle.load(open("results/feedback_errors_test.sav", 'rb')) # loading the results with only P
+# plot_comparison_figures_fcn(errors_all)
 
 #import pdb; pdb.set_trace()

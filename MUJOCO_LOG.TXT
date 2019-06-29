@@ -4,3 +4,6 @@ ERROR: Stack overflow
 Wed Jun 26 02:01:13 2019
 ERROR: Fixed camera id is outside valid range
 
+Fri Jun 28 23:48:06 2019
+ERROR: Could not open activation key file mjkey.txt
+
