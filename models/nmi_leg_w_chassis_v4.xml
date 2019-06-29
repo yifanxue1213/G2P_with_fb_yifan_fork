@@ -3,9 +3,8 @@
     Ver 0 fixed on air
     Ver 1 can move on x axis
     Ver 2 can move on x axis and y axis (y with a spring damper)
-    Ver 2 way havier; can move on x axis and y axis (both freely)  
+    Ver 2 way havier; can move on x axis and y axis (both freely)
     -->
-
 
     <option timestep="0.005" iterations="50" solver="Newton" tolerance="1e-10"/>
 
@@ -33,7 +32,7 @@
         <geom name="floor" pos="0 0 -0.5" size="0 0 1" type="plane" material="matplane"/>
 
         <light directional="true" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 1 -5"/>
-        <body name="Chassis" pos="0 0 -.04">
+        <body name="Chassis" pos="0 0 -.05">
             <camera name="Chassis_camera" pos="0 -6 3"  zaxis="0 -2 1"/>
             <geom name="Chassis_frame" type="box" pos="0 0 1.7" zaxis="0 1 0" size=".50 .30 .25" rgba=".25 .25 .25 0.25" mass=".1"/>
             <joint armature="0" axis="1 0 0" damping="0" frictionloss="100" limited="false" name="rootx" pos="0 0 0" stiffness="0" type="slide"/>
@@ -70,9 +69,10 @@
                     
                     <site name="S_L1_0" pos="-0.05 0 -.1" size="0.02"/>
                     <site name="S_L1_1" pos="0.05 0 -.1" size="0.02"/>
-               </body>
+
+                </body>
             </body>
-        </body>
+        </body>>
     </worldbody>
 
     <tendon>
