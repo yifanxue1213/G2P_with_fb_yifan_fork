@@ -234,7 +234,7 @@ def babbling_fcn(simulation_minutes=5):
 			[[motor1_act],[motor2_act],[motor3_act]],
 			axis=0)
 		)
-	kinematics_activations_show_fcn(activations=babbling_activations)
+	#kinematics_activations_show_fcn(activations=babbling_activations)
 	[babbling_kinematics, babbling_activations, chassis_pos] = \
 	run_activations_fcn(
 		babbling_activations, model_ver=0, timestep=0.005, Mj_render=False
