@@ -98,7 +98,7 @@ def closeloop_run_fcn(model, desired_kinematics, P, I, delay_timesteps=0, model_
 		plt.ylabel("q1  desired vs. simulated")
 		plt.xlabel("Sample #")
 		plt.show(block=True)
-	return average_error
+	return average_error, real_attempt_kinematics, real_attempt_activations
 
 def openloop_run_fcn(model, desired_kinematics, model_ver=0, plot_outputs=False, Mj_render=False):
 	est_activations = estimate_activations_fcn(model, desired_kinematics)
@@ -116,7 +116,7 @@ def openloop_run_fcn(model, desired_kinematics, model_ver=0, plot_outputs=False,
 		plt.ylabel("q1  desired vs. simulated")
 		plt.xlabel("Sample #")
 		plt.show(block=True)
-	return average_error
+	return average_error, real_attempt_kinematics, real_attempt_activations
 
 def p2p_positions_gen_fcn(low, high, number_of_positions, duration_of_each_position, timestep):
 	sample_no_of_each_position = duration_of_each_position / timestep
