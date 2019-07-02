@@ -24,7 +24,7 @@ P = np.array([10, 15])
 I = np.array([2, 6])
 trial_number = 50
 
-experiments_switch=[1, 1, 1, 1, 1, 1, 1]
+experiments_switch=[0, 0, 0, 0, 0, 0, 0, 0]#[1, 1, 1, 1, 1, 1, 1, 1] 
 for ii in range(len(experiments_switch)):
 	globals()["exp{}_average_error".format(ii+1)]=np.zeros([2,1])
 
@@ -150,19 +150,35 @@ if experiments_switch[6] == 1: # everlearn random
 		cum_kinematics_cl, cum_activations_cl = concatinate_data_fcn( cum_kinematics_cl, cum_activations_cl, real_attempt_kinematics_cl, real_attempt_activations_cl, throw_percentage = 0.20)
 		exp7_model_cl = inverse_mapping_fcn(cum_kinematics_cl, cum_activations_cl, prior_model = exp6_model_cl)
 
+if experiments_switch[7] ==1:
+	test8_no = trial_number
+	all_delays = np.arange(0, 21, 2)
+	exp8_average_error = np.zeros([all_delays.shape[0]+1,test8_no])
+	for ii in range(test8_no):
+		features = np.random.rand(10)*.8+.2
+		[q0_filtered, q1_filtered]  = feat_to_positions_fcn(features, timestep=0.005, cycle_duration_in_seconds = 3.3, show=False)
+		#import pdb; pdb.set_trace()
+		q0_filtered_10 = np.tile(q0_filtered,10)
+		q1_filtered_10 = np.tile(q1_filtered,10)
+		desired_kinematics = positions_to_kinematics_fcn(q0_filtered_10, q1_filtered_10, timestep = 0.005)
+		for delay_timesteps, jj in zip(all_delays, range(all_delays.shape[0])):
+			if jj==0: # 0 is for the open loop
+				exp8_average_error[jj,ii], _, _ = openloop_run_fcn(model=model, desired_kinematics=desired_kinematics, plot_outputs=False, Mj_render=False)
+			exp8_average_error[jj+1,ii], _, _ = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics, P=P, I=I, delay_timesteps=delay_timesteps, plot_outputs=False, Mj_render=False) # K = [10, 15]
+		#print("error_without: ", exp2_average_error[0,0], "error with: ", exp2_average_error[1,0])
 
-errors_all = [exp1_average_error, exp2_average_error, exp3_average_error, exp4_average_error, exp5_average_error, exp6_average_error, exp7_average_error]
-pickle.dump([errors_all],open("results/feedback_errors_test.sav", 'wb')) # saving the results with only P
-#[errors_all] = pickle.load(open("results/feedback_errors_test.sav", 'rb')) # loading the results with only P
+errors_all = [exp1_average_error, exp2_average_error, exp3_average_error, exp4_average_error, exp5_average_error, exp6_average_error, exp7_average_error, exp8_average_error]
+#ickle.dump([errors_all],open("results/P_I/feedback_errors_P_I.sav", 'wb')) # saving the results with only P
+[errors_all] = pickle.load(open("results/P_I/feedback_errors_P_I.sav", 'rb')) # loading the results with only P
 #import pdb; pdb.set_trace()
-plt.figure()
-plt.plot(exp6_average_error[0,:])
-plt.plot(exp6_average_error[1,:])
-plt.show(block=True)
-plt.figure()
-plt.plot(exp7_average_error[0,:])
-plt.plot(exp7_average_error[1,:])
-plt.show(block=True)
-#plot_comparison_figures_fcn(errors_all)
+# plt.figure()
+# plt.plot(exp6_average_error[0,:])
+# plt.plot(exp6_average_error[1,:])
+# plt.show(block=True)
+# plt.figure()
+# plt.plot(exp7_average_error[0,:])
+# plt.plot(exp7_average_error[1,:])
+# plt.show(block=True)
+plot_comparison_figures_fcn(errors_all)
 
 #import pdb; pdb.set_trace()

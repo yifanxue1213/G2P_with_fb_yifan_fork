@@ -4,6 +4,7 @@ from numpy import matlib
 from scipy import signal
 from sklearn.neural_network import MLPRegressor
 from matplotlib import pyplot as plt
+from mpl_toolkits.mplot3d import axes3d
 import matplotlib.lines as mlines
 #import pickle
 import os
@@ -129,9 +130,9 @@ def p2p_positions_gen_fcn(low, high, number_of_positions, duration_of_each_posit
 
 def plot_comparison_figures_fcn(errors_all):
 	trial_number = errors_all[0].shape[1]
+	# plt 1: vs cycle period
 	plt.figure()
 	plt.plot(np.linspace(.1,10,trial_number), errors_all[0][0,:], np.linspace(.1,10,trial_number), errors_all[0][1,:], marker='.')
-
 	plt.ylim(0,.75)
 	ax = plt.gca()
 	xmin, xmax = ax.get_xbound()
@@ -145,7 +146,7 @@ def plot_comparison_figures_fcn(errors_all):
 	plt.ylabel("error (rads)")
 	plt.savefig('./results/P_I/exp1.png')
 	plt.show()
-
+	#plt 2: 50 cyclical
 	plt.figure()
 	plt.plot(range(errors_all[1][0,:].shape[0]), errors_all[1][0,:], range(errors_all[1][0,:].shape[0]), errors_all[1][1,:], marker='.')
 	plt.ylim(0,.75)
@@ -155,13 +156,13 @@ def plot_comparison_figures_fcn(errors_all):
 	ax.add_line(mean_error_wo)
 	mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[1][1,:].mean(),errors_all[1][1,:].mean()],color='C1', linestyle='--', alpha=.7)
 	ax.add_line(mean_error_wf)
-	plt.title("Error value over a set of cyclical tasks")
+	plt.title("Error values over a set of cyclical tasks")
 	plt.legend(["without feedback",'with feedback'])
 	plt.xlabel("trial #")
 	plt.ylabel("error (rads)")
 	plt.savefig('./results/P_I/exp2.png')
 	plt.show()
-
+	#plt 3: 50 p2p
 	plt.figure()
 	plt.plot(range(errors_all[2][0,:].shape[0]), errors_all[2][0,:], range(errors_all[2][0,:].shape[0]), errors_all[2][1,:], marker='.')
 	plt.ylim(0,.75)
@@ -171,13 +172,13 @@ def plot_comparison_figures_fcn(errors_all):
 	ax.add_line(mean_error_wo)
 	mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[2][1,:].mean(),errors_all[2][1,:].mean()],color='C1', linestyle='--', alpha=.7)
 	ax.add_line(mean_error_wf)
-	plt.title("Error value over a set of point-to-point tasks")
+	plt.title("Error values over a set of point-to-point tasks")
 	plt.legend(["without feedback",'with feedback'])
 	plt.xlabel("trial #")
 	plt.ylabel("error (rads)")
 	plt.savefig('./results/P_I/exp3.png')
 	plt.show()
-	# plotting mean error for each experiment
+	# plt 4: 1-3 compare
 	plt.figure()
 	plt.bar(range(3), [errors_all[0][0,:].mean(axis=0), errors_all[1][0,:].mean(axis=0), errors_all[2][0,:].mean(axis=0)])
 	plt.bar(range(3), [errors_all[0][1,:].mean(axis=0), errors_all[1][1,:].mean(axis=0), errors_all[2][1,:].mean(axis=0)])
@@ -191,5 +192,82 @@ def plot_comparison_figures_fcn(errors_all):
 	# plt.figure()
 	# plt.plot(range(errors_all[0][0,:].shape[0]), errors_all[0][0,:], range(errors_all[0][0,:].shape[0]), errors_all[0][1,:])
 	# plt.show(block=True)
+
+	#plt 5: with contact
+	plt.figure()
+	plt.plot(range(errors_all[4][0,:].shape[0]), errors_all[4][0,:], range(errors_all[4][0,:].shape[0]), errors_all[4][1,:], marker='.')
+	plt.ylim(0,1)
+	ax = plt.gca()
+	xmin, xmax = ax.get_xbound()
+	mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[4][0,:].mean(),errors_all[4][0,:].mean()],color='C0', linestyle='--', alpha=.7)
+	ax.add_line(mean_error_wo)
+	mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[4][1,:].mean(),errors_all[4][1,:].mean()],color='C1', linestyle='--', alpha=.7)
+	ax.add_line(mean_error_wf)
+	plt.title("Error values when intense contact dynamics are introduced")
+	plt.legend(["without feedback",'with feedback'])
+	plt.xlabel("trial #")
+	plt.ylabel("error (rads)")
+	plt.savefig('./results/P_I/exp5.png')
+	plt.show()
+
+	#plt 6: ever learn ones
+	plt.figure()
+	plt.plot(range(errors_all[5][0,:].shape[0]), errors_all[5][0,:], range(errors_all[5][0,:].shape[0]), errors_all[5][1,:], marker='.')
+	plt.ylim(0,.5)
+	ax = plt.gca()
+	xmin, xmax = ax.get_xbound()
+	mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[5][0,:].mean(),errors_all[5][0,:].mean()],color='C0', linestyle='--', alpha=.7)
+	ax.add_line(mean_error_wo)
+	mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[5][1,:].mean(),errors_all[5][1,:].mean()],color='C1', linestyle='--', alpha=.7)
+	ax.add_line(mean_error_wf)
+	plt.title("Error values as a function of refinements (same desired movements)")
+	plt.legend(["without feedback",'with feedback'])
+	plt.xlabel("trial #")
+	plt.ylabel("error (rads)")
+	plt.savefig('./results/P_I/exp6.png')
+	plt.show()
+
+	#plt 7: ever learn random
+	plt.figure()
+	plt.plot(range(errors_all[6][0,:].shape[0]), errors_all[6][0,:], range(errors_all[6][0,:].shape[0]), errors_all[6][1,:], marker='.')
+	plt.ylim(0,.5)
+	ax = plt.gca()
+	xmin, xmax = ax.get_xbound()
+	mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[6][0,:].mean(),errors_all[6][0,:].mean()],color='C0', linestyle='--', alpha=.7)
+	ax.add_line(mean_error_wo)
+	mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[6][1,:].mean(),errors_all[6][1,:].mean()],color='C1', linestyle='--', alpha=.7)
+	ax.add_line(mean_error_wf)
+	plt.title("Error values as a function of refinements (different desired movements)")
+	plt.legend(['without feedback','with feedback'])
+	plt.xlabel("trial #")
+	plt.ylabel("error (rads)")
+	plt.savefig('./results/P_I/exp7.png')
+	plt.show()
+
+	#plt 8: delay
+	fig = plt.figure(figsize=(10, 6))
+	ax = fig.add_subplot(111, projection='3d')
+
+	# Grab some test data.
+	X, Y, Z = axes3d.get_test_data(0.05)
+	exp8_average_error = errors_all[7]
+	X_1 = np.linspace(0,20*5,11)
+	X = np.tile(X_1, [exp8_average_error.shape[1], 1]).transpose()
+	Y_1 = np.arange(1,exp8_average_error.shape[1]+1)
+	Y = np.tile(Y_1, [11,1])
+	Z = exp8_average_error[1:,:]
+	# Plot a basic wireframe.
+
+	ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=plt.cm.YlGnBu_r, alpha=.9)
+	Z_ol_1 = exp8_average_error[0,:]
+	Z_ol = np.tile(Z_ol_1,[11,1])
+	ax.plot_wireframe(X, Y, Z_ol, rstride=5, cstride=10, color="lightcoral", alpha=.7)
+	ax.view_init(elev=21., azim=-114.)
+	ax.set_xlabel('delays (ms)')
+	ax.set_ylabel('trial #')
+	ax.set_zlabel('mean error (rads)')
+	plt.title('Error for a set of cyclical trials as a function of delay')
+	plt.savefig('./results/P_I/exp8.png')
+	plt.show()
 
 #import pdb; pdb.set_trace()
