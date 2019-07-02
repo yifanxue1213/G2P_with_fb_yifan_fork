@@ -90,7 +90,7 @@ def closeloop_run_fcn(model, desired_kinematics, P, I, delay_timesteps=0, model_
 	error1 = error_cal_fcn(desired_kinematics[:,3], real_attempt_kinematics[:,3])
 	average_error = 0.5*(error0+error1)
 	if plot_outputs:
-		plt.figure()
+		#plt.figure()
 		plt.subplot(2, 1, 1)
 		plt.plot(range(desired_kinematics.shape[0]), desired_kinematics[:,0], range(desired_kinematics.shape[0]), real_attempt_kinematics[:,0])
 		plt.ylabel("q0 desired vs. simulated")
@@ -116,7 +116,7 @@ def openloop_run_fcn(model, desired_kinematics, model_ver=0, plot_outputs=False,
 		plt.plot(range(desired_kinematics.shape[0]), desired_kinematics[:,3], range(desired_kinematics.shape[0]), real_attempt_kinematics[:,3])
 		plt.ylabel("q1  desired vs. simulated")
 		plt.xlabel("Sample #")
-		plt.show(block=True)
+		#plt.show(block=True)
 	return average_error, real_attempt_kinematics, real_attempt_activations
 
 def p2p_positions_gen_fcn(low, high, number_of_positions, duration_of_each_position, timestep):
@@ -178,14 +178,16 @@ def plot_comparison_figures_fcn(errors_all):
 	plt.ylabel("error (rads)")
 	plt.savefig('./results/P_I/exp3.png')
 	plt.show()
-	# plt 4: 1-3 compare
+	# plt 4: compare all
 	plt.figure()
-	plt.bar(range(3), [errors_all[0][0,:].mean(axis=0), errors_all[1][0,:].mean(axis=0), errors_all[2][0,:].mean(axis=0)])
-	plt.bar(range(3), [errors_all[0][1,:].mean(axis=0), errors_all[1][1,:].mean(axis=0), errors_all[2][1,:].mean(axis=0)])
-	plt.ylim(0,.5)
+	plt.bar(range(6), [errors_all[1][0,:].mean(axis=0), errors_all[2][0,:].mean(axis=0), errors_all[0][0,:].mean(axis=0), 
+			errors_all[4][0,:].mean(axis=0), errors_all[5][0,:].mean(axis=0), errors_all[6][0,:].mean(axis=0)])
+	plt.bar(range(6), [errors_all[1][1,:].mean(axis=0), errors_all[2][1,:].mean(axis=0), errors_all[0][1,:].mean(axis=0),
+			errors_all[4][1,:].mean(axis=0), errors_all[5][1,:].mean(axis=0), errors_all[6][1,:].mean(axis=0)])
+	plt.ylim(0,.8)
 	plt.legend(["without feedback",'with feedback'])
 	plt.ylabel("mean error (rads)")
-	plt.xticks(range(3),('cycle period','cyclical','point-to-point'))
+	plt.xticks(range(6),('cyclical','point-to-point', 'cycle period', 'with contact', 'refinements same', 'refinements random'), rotation=10)
 	plt.savefig('./results/P_I/mean_errors.png')
 	plt.show()
 	# errors_all = [exp2_average_error]

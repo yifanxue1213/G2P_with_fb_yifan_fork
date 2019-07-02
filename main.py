@@ -22,15 +22,15 @@ np.random.seed(0)
 
 P = np.array([10, 15])
 I = np.array([2, 6])
-trial_number = 50
-
-experiments_switch=[0, 0, 0, 0, 0, 0, 0, 0]#[1, 1, 1, 1, 1, 1, 1, 1] 
+trial_number = 1
+plot_outputs=True
+experiments_switch=[1, 1, 1, 0, 1, 0, 0, 0]#[0, 0, 0, 0, 0, 0, 0, 0]#[1, 1, 1, 1, 1, 1, 1, 1] 
 for ii in range(len(experiments_switch)):
 	globals()["exp{}_average_error".format(ii+1)]=np.zeros([2,1])
 
 if experiments_switch[0] ==1:
 	features=np.ones(10,)
-	cycle_durations = np.linspace(.1,10,trial_number)
+	cycle_durations = np.array([2])#np.linspace(.1,10,trial_number)
 	test1_no = cycle_durations.shape[0]
 	exp1_average_error = np.zeros([2,test1_no]) # first row open-loop and second row close-loop
 	#cycle length experiment
@@ -39,8 +39,8 @@ if experiments_switch[0] ==1:
 		q0_filtered_10 = np.tile(q0_filtered,10)
 		q1_filtered_10 = np.tile(q1_filtered,10)
 		desired_kinematics = positions_to_kinematics_fcn(q0_filtered_10, q1_filtered_10, timestep = 0.005)
-		exp1_average_error[0,ii], _, _ = openloop_run_fcn(model=model, desired_kinematics=desired_kinematics, plot_outputs=False, Mj_render=False)
-		exp1_average_error[1,ii], _, _ = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics, P=P, I=I, plot_outputs=False, Mj_render=False) # K = [10, 15]
+		exp1_average_error[0,ii], _, _ = openloop_run_fcn(model=model, desired_kinematics=desired_kinematics, plot_outputs=plot_outputs, Mj_render=False)
+		exp1_average_error[1,ii], _, _ = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics, P=P, I=I, plot_outputs=plot_outputs, Mj_render=False) # K = [10, 15]
 
 if experiments_switch[1] ==1:
 	test2_no = trial_number
@@ -52,8 +52,8 @@ if experiments_switch[1] ==1:
 		q0_filtered_10 = np.tile(q0_filtered,10)
 		q1_filtered_10 = np.tile(q1_filtered,10)
 		desired_kinematics = positions_to_kinematics_fcn(q0_filtered_10, q1_filtered_10, timestep = 0.005)
-		exp2_average_error[0,ii], _, _ = openloop_run_fcn(model=model, desired_kinematics=desired_kinematics, plot_outputs=False, Mj_render=False)
-		exp2_average_error[1,ii], _, _ = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics, P=P, I=I, plot_outputs=False, Mj_render=False) # K = [10, 15]
+		exp2_average_error[0,ii], _, _ = openloop_run_fcn(model=model, desired_kinematics=desired_kinematics, plot_outputs=plot_outputs, Mj_render=False)
+		exp2_average_error[1,ii], _, _ = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics, P=P, I=I, plot_outputs=plot_outputs, Mj_render=False) # K = [10, 15]
 		#print("error_without: ", exp2_average_error[0,0], "error with: ", exp2_average_error[1,0])
 
 if experiments_switch[2] ==1:
@@ -63,8 +63,8 @@ if experiments_switch[2] ==1:
 		q0 = p2p_positions_gen_fcn(low=-np.pi/3, high=np.pi/3, number_of_positions=10, duration_of_each_position=3, timestep=.005)
 		q1 = p2p_positions_gen_fcn(low=-np.pi/2, high=0, number_of_positions=10, duration_of_each_position=3, timestep=.005)
 		desired_kinematics = positions_to_kinematics_fcn(q0, q1, timestep = 0.005)
-		exp3_average_error[0,ii], _, _ = openloop_run_fcn(model=model, desired_kinematics=desired_kinematics, plot_outputs=False, Mj_render=False)
-		exp3_average_error[1,ii], _, _ = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics,  P=P, I=I, plot_outputs=False, Mj_render=False) # K = [10, 15]
+		exp3_average_error[0,ii], _, _ = openloop_run_fcn(model=model, desired_kinematics=desired_kinematics, plot_outputs=plot_outputs, Mj_render=False)
+		exp3_average_error[1,ii], _, _ = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics,  P=P, I=I, plot_outputs=plot_outputs, Mj_render=False) # K = [10, 15]
 
 if experiments_switch[3] ==1:
 	test4_no = 1
@@ -93,8 +93,8 @@ if experiments_switch[4] == 1:
 		q0_filtered_10 = np.tile(q0_filtered,10)
 		q1_filtered_10 = np.tile(q1_filtered,10)
 		desired_kinematics = positions_to_kinematics_fcn(q0_filtered_10, q1_filtered_10, timestep = 0.005)
-		exp5_average_error[0,ii], _, _ = openloop_run_fcn(model=model, desired_kinematics=desired_kinematics, model_ver=2, plot_outputs=False, Mj_render=False)
-		exp5_average_error[1,ii], _, _ = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics, model_ver=2, P=P, I=I, plot_outputs=False, Mj_render=False) # K = [10, 15]
+		exp5_average_error[0,ii], _, _ = openloop_run_fcn(model=model, desired_kinematics=desired_kinematics, model_ver=2, plot_outputs=plot_outputs, Mj_render=False)
+		exp5_average_error[1,ii], _, _ = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics, model_ver=2, P=P, I=I, plot_outputs=plot_outputs, Mj_render=False) # K = [10, 15]
 
 if experiments_switch[5] == 1: # everlearn ones
 	[babbling_kinematics_1min, babbling_activations_1min] = babbling_fcn(simulation_minutes=1)
@@ -115,11 +115,11 @@ if experiments_switch[5] == 1: # everlearn ones
 		q1_filtered_10 = np.tile(q1_filtered,10)
 		desired_kinematics = positions_to_kinematics_fcn(q0_filtered_10, q1_filtered_10, timestep = 0.005)
 
-		exp6_average_error[0,ii], real_attempt_kinematics_ol, real_attempt_activations_ol = openloop_run_fcn(model=exp6_model_ol, desired_kinematics=desired_kinematics, model_ver=0, plot_outputs=False, Mj_render=False)
+		exp6_average_error[0,ii], real_attempt_kinematics_ol, real_attempt_activations_ol = openloop_run_fcn(model=exp6_model_ol, desired_kinematics=desired_kinematics, model_ver=0, plot_outputs=plot_outputs, Mj_render=False)
 		cum_kinematics_ol, cum_activations_ol = concatinate_data_fcn( cum_kinematics_ol, cum_activations_ol, real_attempt_kinematics_ol, real_attempt_activations_ol, throw_percentage = 0.20)
 		exp6_model_ol = inverse_mapping_fcn(cum_kinematics_ol, cum_activations_ol, prior_model = exp6_model_ol)
 
-		exp6_average_error[1,ii], real_attempt_kinematics_cl, real_attempt_activations_cl = closeloop_run_fcn(model=exp6_model_cl, desired_kinematics=desired_kinematics, model_ver=0, P=P, I=I, plot_outputs=False, Mj_render=False)
+		exp6_average_error[1,ii], real_attempt_kinematics_cl, real_attempt_activations_cl = closeloop_run_fcn(model=exp6_model_cl, desired_kinematics=desired_kinematics, model_ver=0, P=P, I=I, plot_outputs=plot_outputs, Mj_render=False)
 		cum_kinematics_cl, cum_activations_cl = concatinate_data_fcn( cum_kinematics_cl, cum_activations_cl, real_attempt_kinematics_cl, real_attempt_activations_cl, throw_percentage = 0.20)
 		exp6_model_cl = inverse_mapping_fcn(cum_kinematics_cl, cum_activations_cl, prior_model = exp6_model_cl)
 
@@ -142,11 +142,11 @@ if experiments_switch[6] == 1: # everlearn random
 		q1_filtered_10 = np.tile(q1_filtered,10)
 		desired_kinematics = positions_to_kinematics_fcn(q0_filtered_10, q1_filtered_10, timestep = 0.005)
 
-		exp7_average_error[0,ii], real_attempt_kinematics_ol, real_attempt_activations_ol = openloop_run_fcn(model=exp7_model_ol, desired_kinematics=desired_kinematics, model_ver=0, plot_outputs=False, Mj_render=False)
+		exp7_average_error[0,ii], real_attempt_kinematics_ol, real_attempt_activations_ol = openloop_run_fcn(model=exp7_model_ol, desired_kinematics=desired_kinematics, model_ver=0, plot_outputs=plot_outputs, Mj_render=False)
 		cum_kinematics_ol, cum_activations_ol = concatinate_data_fcn( cum_kinematics_ol, cum_activations_ol, real_attempt_kinematics_ol, real_attempt_activations_ol, throw_percentage = 0.20)
 		exp7_model_ol = inverse_mapping_fcn(cum_kinematics_ol, cum_activations_ol, prior_model = exp6_model_ol)
 
-		exp7_average_error[1,ii], real_attempt_kinematics_cl, real_attempt_activations_cl = closeloop_run_fcn(model=exp7_model_cl, desired_kinematics=desired_kinematics, model_ver=0, P=P, I=I, plot_outputs=False, Mj_render=False)
+		exp7_average_error[1,ii], real_attempt_kinematics_cl, real_attempt_activations_cl = closeloop_run_fcn(model=exp7_model_cl, desired_kinematics=desired_kinematics, model_ver=0, P=P, I=I, plot_outputs=plot_outputs, Mj_render=False)
 		cum_kinematics_cl, cum_activations_cl = concatinate_data_fcn( cum_kinematics_cl, cum_activations_cl, real_attempt_kinematics_cl, real_attempt_activations_cl, throw_percentage = 0.20)
 		exp7_model_cl = inverse_mapping_fcn(cum_kinematics_cl, cum_activations_cl, prior_model = exp6_model_cl)
 
@@ -179,6 +179,6 @@ errors_all = [exp1_average_error, exp2_average_error, exp3_average_error, exp4_a
 # plt.plot(exp7_average_error[0,:])
 # plt.plot(exp7_average_error[1,:])
 # plt.show(block=True)
-plot_comparison_figures_fcn(errors_all)
+#plot_comparison_figures_fcn(errors_all)
 
 #import pdb; pdb.set_trace()
