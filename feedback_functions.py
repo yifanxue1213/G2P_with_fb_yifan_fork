@@ -90,7 +90,7 @@ def closeloop_run_fcn(model, desired_kinematics, P, I, delay_timesteps=0, model_
 	error1 = error_cal_fcn(desired_kinematics[:,3], real_attempt_kinematics[:,3])
 	average_error = 0.5*(error0+error1)
 	if plot_outputs:
-		#plt.figure()
+		plt.figure()
 		plt.subplot(2, 1, 1)
 		plt.plot(range(desired_kinematics.shape[0]), desired_kinematics[:,0], range(desired_kinematics.shape[0]), real_attempt_kinematics[:,0])
 		plt.ylabel("q0 desired vs. simulated")
@@ -116,7 +116,7 @@ def openloop_run_fcn(model, desired_kinematics, model_ver=0, plot_outputs=False,
 		plt.plot(range(desired_kinematics.shape[0]), desired_kinematics[:,3], range(desired_kinematics.shape[0]), real_attempt_kinematics[:,3])
 		plt.ylabel("q1  desired vs. simulated")
 		plt.xlabel("Sample #")
-		#plt.show(block=True)
+		plt.show(block=True)
 	return average_error, real_attempt_kinematics, real_attempt_activations
 
 def p2p_positions_gen_fcn(low, high, number_of_positions, duration_of_each_position, timestep):
