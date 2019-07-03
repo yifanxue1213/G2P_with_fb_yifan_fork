@@ -25,7 +25,7 @@ I = np.array([2, 6])
 trial_number = 25
 
 np.random.seed(0)
-experiments_switch=np.ones(10,)#[0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
+experiments_switch = np.zeros(10,)#np.ones(10,)#[0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
 for ii in range(len(experiments_switch)):
 	globals()["exp{}_average_error".format(ii+1)]=np.zeros([2,1])
 	exp6_average_error = np.zeros([3,1])
@@ -190,7 +190,7 @@ if experiments_switch[8] == 1: # everlearn random mesh
 		model_1min = inverse_mapping_fcn(kinematics=babbling_kinematics_1min, activations=babbling_activations_1min)
 		cum_kinematics_ol = deepcopy(babbling_kinematics_1min)
 		cum_activations_ol = deepcopy(babbling_activations_1min)
-		exp10_model_ol = deepcopy(model_1min)
+		exp9_model_ol = deepcopy(model_1min)
 		cum_kinematics_cl = deepcopy(babbling_kinematics_1min)
 		cum_activations_cl = deepcopy(babbling_activations_1min)
 		exp9_model_cl = deepcopy(model_1min)
@@ -243,7 +243,7 @@ if experiments_switch[9] == 1: # everlearn random
 			exp10_model_cl = inverse_mapping_fcn(cum_kinematics_cl, cum_activations_cl, prior_model = exp10_model_cl)
 
 errors_all = [exp1_average_error, exp2_average_error, exp3_average_error, exp4_average_error, exp5_average_error, exp6_average_error, exp7_average_error, exp8_average_error, exp9_average_error, exp10_average_error]
-pickle.dump([errors_all],open("results/P_I/feedback_errors_P_I_V3.sav", 'wb')) # saving the results with only P
+#pickle.dump([errors_all],open("results/P_I/feedback_errors_P_I_V3.sav", 'wb')) # saving the results with only P
 [errors_all] = pickle.load(open("results/P_I/feedback_errors_P_I_V3.sav", 'rb')) # loading the results with only P
 
 plot_comparison_figures_fcn(errors_all)
