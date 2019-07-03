@@ -196,7 +196,7 @@ def babbling_fcn(simulation_minutes=5):
 	this function babbles in the mujoco environment and then
 	returns input outputs (actuation values and kinematics)
 	"""
-	np.random.seed(2) # to get consistent results for debugging purposes
+	#np.random.seed(2) # to get consistent results for debugging purposes
 
 	model = load_model_from_path("./models/nmi_leg_w_chassis_v0.xml")
 	sim = MjSim(model)
