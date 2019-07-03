@@ -277,7 +277,6 @@ def plot_comparison_figures_fcn(errors_all):
 	plt.show()
 
 	#plt 9: babbling mesh
-
 	exp9_average_error=errors_all[8]
 	fig = plt.figure(figsize=(10, 6))
 	ax = fig.add_subplot(111, projection='3d')
@@ -289,16 +288,8 @@ def plot_comparison_figures_fcn(errors_all):
 	Y = np.tile(Y_1, [trials_num, 1])
 	Z = exp9_average_error[0,:,:]
 	ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color='C0', alpha=1)
-	X_1 = np.linspace(0,trials_num,trials_num)
-	X = np.tile(X_1, [babblings_num, 1]).transpose()
-	Y_1 = np.array([1, 2.5, 5])
-	Y = np.tile(Y_1, [trials_num, 1])
 	Z = exp9_average_error[1,:,:]
 	ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color = 'C1', alpha=.5)
-	X_1 = np.linspace(0,trials_num,trials_num)
-	X = np.tile(X_1, [babblings_num, 1]).transpose()
-	Y_1 = np.array([1, 2.5,  5])
-	Y = np.tile(Y_1, [trials_num, 1])
 	Z = exp9_average_error[2,:,:]
 	ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color='C2', alpha=.5)
 	ax.set_zlim(0,.25)
@@ -307,6 +298,43 @@ def plot_comparison_figures_fcn(errors_all):
 	ax.set_ylabel('babbling duration (minutes)')
 	ax.set_zlabel('mean error (rads)')
 	plt.savefig('./results/P_I/exp9.png')
+	plt.show()
+
+	#plt 10 & 10s: refinements over a set of random trials
+	exp10_average_error=errors_all[9]
+
+	fig = plt.figure(figsize=(10, 6))
+	ax = fig.add_subplot(111, projection='3d')
+	trials_num = exp10_average_error.shape[1]
+	rep_num = exp10_average_error.shape[2]
+	X_1 = np.linspace(0,trials_num,trials_num)
+	X = np.tile(X_1, [rep_num, 1]).transpose()
+	Y_1 = np.linspace(0,rep_num,rep_num)
+	Y = np.tile(Y_1, [trials_num, 1])
+	Z = exp10_average_error[0,:,:]e()
+	ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color='C0', alpha=1)
+	Z = exp10_average_error[1,:,:]
+	ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color = 'C1', alpha=.5)
+	Z = exp10_average_error[2,:,:]
+	ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color='C2', alpha=.5)
+	ax.set_zlim(0,.8)
+	ax.view_init(elev=34., azim=-47.)
+	ax.set_xlabel('refinement #')
+	ax.set_ylabel('tasks')
+	ax.set_zlabel('mean error (rads)')
+	plt.savefig('./results/P_I/exp10_S.png')
+	plt.show()
+
+	fig = plt.figure(figsize=(10, 6))
+	ax = fig.add_subplot(111)
+	means = exp10_average_error.mean(axis=2)
+	ax.errorbar(np.linspace(1,25,25),means[0,:],yerr=exp10_average_error[0].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5) 
+	ax.errorbar(np.linspace(1.2,25.2,25),means[1,:],yerr=exp10_average_error[1].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5)
+	ax.errorbar(np.linspace(1.1,25.1,25),means[2,:],yerr=exp10_average_error[2].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5)
+	ax.set_xlabel('refinement #')
+	ax.set_ylabel('mean error (rads)')
+	ax.legend(['a','b','c'])
+	plt.savefig('./results/P_I/exp10.png')
 	plt.show()
 
 #import pdb; pdb.set_trace()
