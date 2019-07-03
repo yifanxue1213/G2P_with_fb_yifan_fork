@@ -311,7 +311,7 @@ def plot_comparison_figures_fcn(errors_all):
 	X = np.tile(X_1, [rep_num, 1]).transpose()
 	Y_1 = np.linspace(0,rep_num,rep_num)
 	Y = np.tile(Y_1, [trials_num, 1])
-	Z = exp10_average_error[0,:,:]e()
+	Z = exp10_average_error[0,:,:]
 	ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color='C0', alpha=1)
 	Z = exp10_average_error[1,:,:]
 	ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color = 'C1', alpha=.5)
