@@ -25,12 +25,14 @@ I = np.array([2, 6])
 trial_number = 25
 
 np.random.seed(0)
-experiments_switch = np.zeros(10,)#np.ones(10,)#[0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
+experiments_switch = np.ones(10,)#np.ones(10,)#[0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
 for ii in range(len(experiments_switch)):
 	globals()["exp{}_average_error".format(ii+1)]=np.zeros([2,1])
 	exp6_average_error = np.zeros([3,1])
 	exp7_average_error = np.zeros([3,1])
 	exp9_average_error = np.zeros([3,1,1])
+	exp10_average_error = np.zeros([3,1,1])
+
 	
 if experiments_switch[0] ==1: # as a function of cycle period
 	features=np.ones(10,)
@@ -178,7 +180,8 @@ if experiments_switch[7] ==1: # delay
 		#print("error_without: ", exp2_average_error[0,0], "error with: ", exp2_average_error[1,0])
 
 if experiments_switch[8] == 1: # everlearn random mesh
-	test9_no = trial_number
+	refine_num = 25
+	test9_no = refine_num
 	babbling_times = np.array([1, 2.5, 5])
 	num_babbling_cases = babbling_times.shape[0]
 
@@ -243,9 +246,10 @@ if experiments_switch[9] == 1: # everlearn random
 			exp10_model_cl = inverse_mapping_fcn(cum_kinematics_cl, cum_activations_cl, prior_model = exp10_model_cl)
 
 errors_all = [exp1_average_error, exp2_average_error, exp3_average_error, exp4_average_error, exp5_average_error, exp6_average_error, exp7_average_error, exp8_average_error, exp9_average_error, exp10_average_error]
-#pickle.dump([errors_all],open("results/P_I/feedback_errors_P_I_V3.sav", 'wb')) # saving the results with only P
+pickle.dump([errors_all],open("results/P_I/feedback_errors_P_I_V3.sav", 'wb')) # saving the results with only P
 [errors_all] = pickle.load(open("results/P_I/feedback_errors_P_I_V3.sav", 'rb')) # loading the results with only P
 
+#import pdb; pdb.set_trace()
 plot_comparison_figures_fcn(errors_all)
 
 #import pdb; pdb.set_trace()
