@@ -133,7 +133,7 @@ def plot_comparison_figures_fcn(errors_all):
 	# plt 1: vs cycle period
 	plt.figure()
 	plt.plot(np.linspace(.1,10,trial_number), errors_all[0][0,:], np.linspace(.1,10,trial_number), errors_all[0][1,:], marker='.')
-	plt.ylim(0,.75)
+	plt.ylim(0,.8)
 	ax = plt.gca()
 	xmin, xmax = ax.get_xbound()
 	mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[0][0,:].mean(),errors_all[0][0,:].mean()],color='C0', linestyle='--', alpha=.7)
@@ -184,7 +184,7 @@ def plot_comparison_figures_fcn(errors_all):
 			errors_all[4][0,:].mean(axis=0), errors_all[5][0,:].mean(axis=0), errors_all[6][0,:].mean(axis=0)])
 	plt.bar(range(6), [errors_all[1][1,:].mean(axis=0), errors_all[2][1,:].mean(axis=0), errors_all[0][1,:].mean(axis=0),
 			errors_all[4][1,:].mean(axis=0), errors_all[5][1,:].mean(axis=0), errors_all[6][1,:].mean(axis=0)])
-	plt.ylim(0,.8)
+	plt.ylim(0,.85)
 	plt.legend(["without feedback",'with feedback'])
 	plt.ylabel("mean error (rads)")
 	plt.xticks(range(6),('cyclical','point-to-point', 'cycle period', 'with contact', 'refinements same', 'refinements random'), rotation=10)
@@ -215,7 +215,7 @@ def plot_comparison_figures_fcn(errors_all):
 	#plt 6: ever learn ones
 	plt.figure()
 	plt.plot(range(errors_all[5][0,:].shape[0]), errors_all[5][0,:], range(errors_all[5][0,:].shape[0]), errors_all[5][1,:],  range(errors_all[5][0,:].shape[0]), errors_all[5][2,:], marker='.')
-	plt.ylim(0,.6)
+	plt.ylim(0,.25)
 	ax = plt.gca()
 	xmin, xmax = ax.get_xbound()
 	mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[5][0,:].mean(),errors_all[5][0,:].mean()],color='C0', linestyle='--', alpha=.7)
@@ -274,6 +274,39 @@ def plot_comparison_figures_fcn(errors_all):
 	ax.set_zlabel('mean error (rads)')
 	plt.title('Error for a set of cyclical trials as a function of delay')
 	plt.savefig('./results/P_I/exp8.png')
+	plt.show()
+
+	#plt 9: babbling mesh
+
+	exp9_average_error=errors_all[8]
+	fig = plt.figure(figsize=(10, 6))
+	ax = fig.add_subplot(111, projection='3d')
+	trials_num = exp9_average_error.shape[1]
+	babblings_num = exp9_average_error.shape[2]
+	X_1 = np.linspace(0,trials_num,trials_num)
+	X = np.tile(X_1, [babblings_num, 1]).transpose()
+	Y_1 = np.array([1, 2.5, 5])
+	Y = np.tile(Y_1, [trials_num, 1])
+	Z = exp9_average_error[0,:,:]
+	ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color='C0', alpha=1)
+	X_1 = np.linspace(0,trials_num,trials_num)
+	X = np.tile(X_1, [babblings_num, 1]).transpose()
+	Y_1 = np.array([1, 2.5, 5])
+	Y = np.tile(Y_1, [trials_num, 1])
+	Z = exp9_average_error[1,:,:]
+	ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color = 'C1', alpha=.5)
+	X_1 = np.linspace(0,trials_num,trials_num)
+	X = np.tile(X_1, [babblings_num, 1]).transpose()
+	Y_1 = np.array([1, 2.5,  5])
+	Y = np.tile(Y_1, [trials_num, 1])
+	Z = exp9_average_error[2,:,:]
+	ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color='C2', alpha=.5)
+	ax.set_zlim(0,.25)
+	ax.view_init(elev=34., azim=-47.)
+	ax.set_xlabel('refinement #')
+	ax.set_ylabel('babbling duration (minutes)')
+	ax.set_zlabel('mean error (rads)')
+	plt.savefig('./results/P_I/exp9.png')
 	plt.show()
 
 #import pdb; pdb.set_trace()
