@@ -8,24 +8,25 @@ from feedback_functions import *
 
 simplefilter(action='ignore', category=FutureWarning)
 
-np.random.seed(0)
-[babbling_kinematics, babbling_activations] = babbling_fcn(simulation_minutes=5)
-model = inverse_mapping_fcn(kinematics=babbling_kinematics, activations=babbling_activations)
-cum_kinematics = babbling_kinematics
-cum_activations = babbling_activations
+# np.random.seed(0)
+# [babbling_kinematics, babbling_activations] = babbling_fcn(simulation_minutes=5)
+# model = inverse_mapping_fcn(kinematics=babbling_kinematics, activations=babbling_activations)
+# cum_kinematics = babbling_kinematics
+# cum_activations = babbling_activations
 
 
 
-pickle.dump([model,cum_kinematics, cum_activations],open("results/mlp_model.sav", 'wb'))
+# pickle.dump([model,cum_kinematics, cum_activations],open("results/mlp_model.sav", 'wb'))
 [model,cum_kinematics, cum_activations] = pickle.load(open("results/mlp_model.sav", 'rb')) # loading the model
 
 
 P = np.array([10, 15])
 I = np.array([2, 6])
-trial_number = 25
+trial_number = 50
 
 np.random.seed(0)
-experiments_switch = np.ones(10,)#np.ones(10,)#[0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
+experiments_switch = np.zeros(10,)#np.ones(10,)#[0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
+#experiments_switch[-1]=1
 for ii in range(len(experiments_switch)):
 	globals()["exp{}_average_error".format(ii+1)]=np.zeros([2,1])
 	exp6_average_error = np.zeros([3,1])
@@ -218,7 +219,7 @@ if experiments_switch[9] == 1: # everlearn random
 	np.random.seed(0)
 	rep_num = trial_number
 	refine_num=25
-	exp10_average_error = np.zeros([3,refine_num,rep_num])
+	exp10_average_error = np.zeros([4,refine_num,rep_num])
 	for jj in range(rep_num):
 		[babbling_kinematics_1min, babbling_activations_1min] = babbling_fcn(simulation_minutes=1)
 		model_1min = inverse_mapping_fcn(kinematics=babbling_kinematics_1min, activations=babbling_activations_1min)
@@ -237,6 +238,7 @@ if experiments_switch[9] == 1: # everlearn random
 			desired_kinematics = positions_to_kinematics_fcn(q0_filtered_10, q1_filtered_10, timestep = 0.005)
 
 			exp10_average_error[0,ii,jj], real_attempt_kinematics_ol, real_attempt_activations_ol = openloop_run_fcn(model=exp10_model_ol, desired_kinematics=desired_kinematics, model_ver=0, plot_outputs=False, Mj_render=False)
+			exp10_average_error[3,ii,jj], _, _ = closeloop_run_fcn(model=exp10_model_ol, desired_kinematics=desired_kinematics, model_ver=0,  P=P, I=I, plot_outputs=False, Mj_render=False)
 			cum_kinematics_ol, cum_activations_ol = concatinate_data_fcn( cum_kinematics_ol, cum_activations_ol, real_attempt_kinematics_ol, real_attempt_activations_ol, throw_percentage = 0.20)
 			exp10_model_ol = inverse_mapping_fcn(cum_kinematics_ol, cum_activations_ol, prior_model = exp10_model_ol)
 
@@ -246,10 +248,10 @@ if experiments_switch[9] == 1: # everlearn random
 			exp10_model_cl = inverse_mapping_fcn(cum_kinematics_cl, cum_activations_cl, prior_model = exp10_model_cl)
 
 errors_all = [exp1_average_error, exp2_average_error, exp3_average_error, exp4_average_error, exp5_average_error, exp6_average_error, exp7_average_error, exp8_average_error, exp9_average_error, exp10_average_error]
-pickle.dump([errors_all],open("results/P_I/feedback_errors_P_I_V3.sav", 'wb')) # saving the results with only P
-[errors_all] = pickle.load(open("results/P_I/feedback_errors_P_I_V3.sav", 'rb')) # loading the results with only P
+#pickle.dump([errors_all],open("results/P_I/feedback_errors_P_I_V3_50_exp10x4.sav", 'wb')) # saving the results with only P
+[errors_all] = pickle.load(open("results/P_I/feedback_errors_P_I_V3_50_exp10x4.sav", 'rb')) # loading the results with only P
 
-#import pdb; pdb.set_trace()
+import pdb; pdb.set_trace()
 plot_comparison_figures_fcn(errors_all)
 
 #import pdb; pdb.set_trace()

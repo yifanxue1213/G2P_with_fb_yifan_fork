@@ -317,6 +317,8 @@ def plot_comparison_figures_fcn(errors_all):
 	ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color = 'C1', alpha=.5)
 	Z = exp10_average_error[2,:,:]
 	ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color='C2', alpha=.5)
+	Z = exp10_average_error[3,:,:]
+	ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color='C3', alpha=.5)
 	ax.set_zlim(0,.8)
 	ax.view_init(elev=34., azim=-47.)
 	ax.set_xlabel('refinement #')
@@ -328,12 +330,13 @@ def plot_comparison_figures_fcn(errors_all):
 	fig = plt.figure(figsize=(10, 6))
 	ax = fig.add_subplot(111)
 	means = exp10_average_error.mean(axis=2)
-	ax.errorbar(np.linspace(1,25,25),means[0,:],yerr=exp10_average_error[0].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5) 
-	ax.errorbar(np.linspace(1.2,25.2,25),means[1,:],yerr=exp10_average_error[1].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5)
-	ax.errorbar(np.linspace(1.1,25.1,25),means[2,:],yerr=exp10_average_error[2].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5)
+	ax.errorbar(np.linspace(.85,24.85,25),means[0,:],yerr=exp10_average_error[0].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5) 
+	ax.errorbar(np.linspace(1.05,25.05,25),means[1,:],yerr=exp10_average_error[1].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5)
+	ax.errorbar(np.linspace(.95,24.95,25),means[2,:],yerr=exp10_average_error[2].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5)
+	ax.errorbar(np.linspace(1.15,25.15,25),means[3,:],yerr=exp10_average_error[3].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5)
 	ax.set_xlabel('refinement #')
 	ax.set_ylabel('mean error (rads)')
-	ax.legend(['a','b','c'])
+	ax.legend(['a','b','c','d'])
 	plt.savefig('./results/P_I/exp10.png')
 	plt.show()
 
