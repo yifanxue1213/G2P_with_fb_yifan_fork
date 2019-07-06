@@ -90,33 +90,40 @@ def closeloop_run_fcn(model, desired_kinematics, P, I, delay_timesteps=0, model_
 	error1 = error_cal_fcn(desired_kinematics[:,3], real_attempt_kinematics[:,3])
 	average_error = 0.5*(error0+error1)
 	if plot_outputs:
-		plt.figure()
+		#plt.figure()
+		alpha=.8
+		plot_t = np.linspace(timestep, desired_kinematics.shape[0]*timestep, desired_kinematics.shape[0])
 		plt.subplot(2, 1, 1)
-		plt.plot(range(desired_kinematics.shape[0]), desired_kinematics[:,0], range(desired_kinematics.shape[0]), real_attempt_kinematics[:,0])
-		plt.ylabel("q0 desired vs. simulated")
+		plt.plot(plot_t, desired_kinematics[:,0], 'C2', plot_t, real_attempt_kinematics[:,0], 'C1', alpha=alpha)
+		plt.ylabel("$q_1$ (rads)")
 		plt.subplot(2, 1, 2)
-		plt.plot(range(desired_kinematics.shape[0]), desired_kinematics[:,3], range(desired_kinematics.shape[0]), real_attempt_kinematics[:,3])
-		plt.ylabel("q1  desired vs. simulated")
-		plt.xlabel("Sample #")
+		plt.plot(plot_t, desired_kinematics[:,3], 'C2', plot_t, real_attempt_kinematics[:,3], 'C1', alpha=alpha)
+		plt.ylabel("$q_2$  (rads)")
+		plt.xlabel("time (s)")
 		plt.show(block=True)
 	return average_error, real_attempt_kinematics, real_attempt_activations
 
-def openloop_run_fcn(model, desired_kinematics, model_ver=0, plot_outputs=False, Mj_render=False):
+def openloop_run_fcn(model, desired_kinematics, model_ver=0, plot_outputs=False, Mj_render=False, timestep=.005):
 	est_activations = estimate_activations_fcn(model, desired_kinematics)
 	[real_attempt_kinematics, real_attempt_activations, chassis_pos] = run_activations_fcn(est_activations, model_ver=model_ver, timestep=0.005, Mj_render=Mj_render)
 	error0 = error_cal_fcn(desired_kinematics[:,0], real_attempt_kinematics[:,0])
 	error1 = error_cal_fcn(desired_kinematics[:,3], real_attempt_kinematics[:,3])
 	average_error = 0.5*(error0+error1)
 	if plot_outputs:
-		plt.figure()
+		plt.figure(figsize=(10, 6))
+		plt.rcParams.update({'font.size': 12})
+		alpha=.8
+		plot_t = np.linspace(timestep, desired_kinematics.shape[0]*timestep, desired_kinematics.shape[0])
 		plt.subplot(2, 1, 1)
-		plt.plot(range(desired_kinematics.shape[0]), desired_kinematics[:,0], range(desired_kinematics.shape[0]), real_attempt_kinematics[:,0])
-		plt.ylabel("q0 desired vs. simulated")
+		plt.plot(plot_t, desired_kinematics[:,0], 'C2', plot_t, real_attempt_kinematics[:,0], 'C0', alpha=alpha)
+		plt.ylabel("$q_1$ (rads)")
+		plt.ylim([-1.2, 1.2])
 		plt.subplot(2, 1, 2)
-		plt.plot(range(desired_kinematics.shape[0]), desired_kinematics[:,3], range(desired_kinematics.shape[0]), real_attempt_kinematics[:,3])
-		plt.ylabel("q1  desired vs. simulated")
-		plt.xlabel("Sample #")
-		plt.show(block=True)
+		plt.plot(plot_t, desired_kinematics[:,3], 'C2', plot_t, real_attempt_kinematics[:,3], 'C0', alpha=alpha)
+		plt.ylabel("$q_2$  (rads)")
+		plt.xlabel("time (s)")
+		plt.ylim([-1.7, .2])
+		#.show(block=True)
 	return average_error, real_attempt_kinematics, real_attempt_activations
 
 def p2p_positions_gen_fcn(low, high, number_of_positions, duration_of_each_position, timestep):
@@ -129,9 +136,10 @@ def p2p_positions_gen_fcn(low, high, number_of_positions, duration_of_each_posit
 	return random_array
 
 def plot_comparison_figures_fcn(errors_all):
+	plt.rcParams.update({'font.size': 12})
 	trial_number = errors_all[0].shape[1]
 	# plt 1: vs cycle period
-	plt.figure()
+	plt.figure(figsize=(10, 6))
 	plt.plot(np.linspace(.1,10,trial_number), errors_all[0][0,:], np.linspace(.1,10,trial_number), errors_all[0][1,:], marker='.')
 	plt.ylim(0,.8)
 	ax = plt.gca()
@@ -140,14 +148,15 @@ def plot_comparison_figures_fcn(errors_all):
 	ax.add_line(mean_error_wo)
 	mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[0][1,:].mean(),errors_all[0][1,:].mean()],color='C1', linestyle='--', alpha=.7)
 	ax.add_line(mean_error_wf)
-	plt.title("Error as a function of cycle period")
-	plt.legend(["without feedback",'with feedback'])
+	#plt.title("Error as a function of cycle period")
+	plt.legend(["open-loop",'close-loop'])
 	plt.xlabel("cycle period (s)")
 	plt.ylabel("error (rads)")
+	plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
 	plt.savefig('./results/P_I/exp1.png')
 	plt.show()
 	#plt 2: 50 cyclical
-	plt.figure()
+	plt.figure(figsize=(10, 6))
 	plt.plot(range(errors_all[1][0,:].shape[0]), errors_all[1][0,:], range(errors_all[1][0,:].shape[0]), errors_all[1][1,:], marker='.')
 	plt.ylim(0,.75)
 	ax = plt.gca()
@@ -156,14 +165,15 @@ def plot_comparison_figures_fcn(errors_all):
 	ax.add_line(mean_error_wo)
 	mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[1][1,:].mean(),errors_all[1][1,:].mean()],color='C1', linestyle='--', alpha=.7)
 	ax.add_line(mean_error_wf)
-	plt.title("Error values over a set of cyclical tasks")
-	plt.legend(["without feedback",'with feedback'])
+	#plt.title("Error values over a set of cyclical tasks")
+	plt.legend(["open-loop",'close-loop'])
 	plt.xlabel("trial #")
 	plt.ylabel("error (rads)")
+	plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
 	plt.savefig('./results/P_I/exp2.png')
 	plt.show()
 	#plt 3: 50 p2p
-	plt.figure()
+	plt.figure(figsize=(10, 6))
 	plt.plot(range(errors_all[2][0,:].shape[0]), errors_all[2][0,:], range(errors_all[2][0,:].shape[0]), errors_all[2][1,:], marker='.')
 	plt.ylim(0,.75)
 	ax = plt.gca()
@@ -172,22 +182,23 @@ def plot_comparison_figures_fcn(errors_all):
 	ax.add_line(mean_error_wo)
 	mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[2][1,:].mean(),errors_all[2][1,:].mean()],color='C1', linestyle='--', alpha=.7)
 	ax.add_line(mean_error_wf)
-	plt.title("Error values over a set of point-to-point tasks")
-	plt.legend(["without feedback",'with feedback'])
+	#plt.title("Error values over a set of point-to-point tasks")
+	plt.legend(["open-loop",'close-loop'])
 	plt.xlabel("trial #")
 	plt.ylabel("error (rads)")
 	plt.savefig('./results/P_I/exp3.png')
 	plt.show()
 	# plt 4: compare all
-	plt.figure()
-	plt.bar(range(6), [errors_all[1][0,:].mean(axis=0), errors_all[2][0,:].mean(axis=0), errors_all[0][0,:].mean(axis=0), 
-			errors_all[4][0,:].mean(axis=0), errors_all[5][0,:].mean(axis=0), errors_all[6][0,:].mean(axis=0)])
-	plt.bar(range(6), [errors_all[1][1,:].mean(axis=0), errors_all[2][1,:].mean(axis=0), errors_all[0][1,:].mean(axis=0),
-			errors_all[4][1,:].mean(axis=0), errors_all[5][1,:].mean(axis=0), errors_all[6][1,:].mean(axis=0)])
+	plt.figure(figsize=(10, 6))
+	plt.bar(range(5), [errors_all[1][0,:].mean(axis=0), errors_all[2][0,:].mean(axis=0), errors_all[0][0,:].mean(axis=0), 
+			errors_all[4][0,:].mean(axis=0), errors_all[9].mean(axis=2)[0,:].mean()])
+	plt.bar(range(5), [errors_all[1][1,:].mean(axis=0), errors_all[2][1,:].mean(axis=0), errors_all[0][1,:].mean(axis=0),
+			errors_all[4][1,:].mean(axis=0), errors_all[9].mean(axis=2)[1,:].mean()])
 	plt.ylim(0,.85)
-	plt.legend(["without feedback",'with feedback'])
+	plt.legend(["open-loop",'close-loop'])
 	plt.ylabel("mean error (rads)")
-	plt.xticks(range(6),('cyclical','point-to-point', 'cycle period', 'with contact', 'refinements same', 'refinements random'), rotation=10)
+	plt.xticks(range(6),('cyclical','point-to-point', 'cycle period', 'with contact', 'refinements\n(w/ shorter babbling)'), rotation=7)
+	plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
 	plt.savefig('./results/P_I/mean_errors.png')
 	plt.show()
 	# errors_all = [exp2_average_error]
@@ -196,7 +207,7 @@ def plot_comparison_figures_fcn(errors_all):
 	# plt.show(block=True)
 
 	#plt 5: with contact
-	plt.figure()
+	plt.figure(figsize=(10, 6))
 	plt.plot(range(errors_all[4][0,:].shape[0]), errors_all[4][0,:], range(errors_all[4][0,:].shape[0]), errors_all[4][1,:], marker='.')
 	plt.ylim(0,1)
 	ax = plt.gca()
@@ -205,15 +216,16 @@ def plot_comparison_figures_fcn(errors_all):
 	ax.add_line(mean_error_wo)
 	mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[4][1,:].mean(),errors_all[4][1,:].mean()],color='C1', linestyle='--', alpha=.7)
 	ax.add_line(mean_error_wf)
-	plt.title("Error values when intense contact dynamics are introduced")
-	plt.legend(["without feedback",'with feedback'])
+	#plt.title("Error values when intense contact dynamics are introduced")
+	plt.legend(["open-loop",'close-loop'])
 	plt.xlabel("trial #")
 	plt.ylabel("error (rads)")
+	plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
 	plt.savefig('./results/P_I/exp5.png')
 	plt.show()
 
 	#plt 6: ever learn ones
-	plt.figure()
+	plt.figure(figsize=(10, 6))
 	plt.plot(range(errors_all[5][0,:].shape[0]), errors_all[5][0,:], range(errors_all[5][0,:].shape[0]), errors_all[5][1,:],  range(errors_all[5][0,:].shape[0]), errors_all[5][2,:], marker='.')
 	plt.ylim(0,.25)
 	ax = plt.gca()
@@ -228,11 +240,12 @@ def plot_comparison_figures_fcn(errors_all):
 	plt.legend(["without feedback",'with feedback', 'without feedback alt'])
 	plt.xlabel("trial #")
 	plt.ylabel("error (rads)")
+	plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
 	plt.savefig('./results/P_I/exp6.png')
 	plt.show()
 
 	#plt 7: ever learn random
-	plt.figure()
+	plt.figure(figsize=(10, 6))
 	plt.plot(range(errors_all[6][0,:].shape[0]), errors_all[6][0,:], range(errors_all[6][0,:].shape[0]), errors_all[6][1,:], range(errors_all[6][0,:].shape[0]), errors_all[6][2,:], marker='.')
 	plt.ylim(0,.6)
 	ax = plt.gca()
@@ -247,6 +260,7 @@ def plot_comparison_figures_fcn(errors_all):
 	plt.legend(['without feedback','with feedback', 'with feedback alt'])
 	plt.xlabel("trial #")
 	plt.ylabel("error (rads)")
+	plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
 	plt.savefig('./results/P_I/exp7.png')
 	plt.show()
 
@@ -330,13 +344,14 @@ def plot_comparison_figures_fcn(errors_all):
 	fig = plt.figure(figsize=(10, 6))
 	ax = fig.add_subplot(111)
 	means = exp10_average_error.mean(axis=2)
-	ax.errorbar(np.linspace(.85,24.85,25),means[0,:],yerr=exp10_average_error[0].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5) 
-	ax.errorbar(np.linspace(1.05,25.05,25),means[1,:],yerr=exp10_average_error[1].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5)
-	ax.errorbar(np.linspace(.95,24.95,25),means[2,:],yerr=exp10_average_error[2].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5)
-	ax.errorbar(np.linspace(1.15,25.15,25),means[3,:],yerr=exp10_average_error[3].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5)
+	ax.errorbar(np.linspace(.85,24.85,25),means[0,:],yerr=exp10_average_error[0].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5)	# ol
+	ax.errorbar(np.linspace(1.05,25.05,25),means[1,:],yerr=exp10_average_error[1].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5)	# cl
+	ax.errorbar(np.linspace(.95,24.95,25),means[2,:],yerr=exp10_average_error[2].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5)	# ol/trained with cl mdl
+	ax.errorbar(np.linspace(1.15,25.15,25),means[3,:],yerr=exp10_average_error[3].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5)	# cl/trained with ol mdl
 	ax.set_xlabel('refinement #')
 	ax.set_ylabel('mean error (rads)')
-	ax.legend(['a','b','c','d'])
+	plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
+	ax.legend(['open-loop','close-loop','ol w/ cl model','cl w/ ol model'])
 	plt.savefig('./results/P_I/exp10.png')
 	plt.show()
 
