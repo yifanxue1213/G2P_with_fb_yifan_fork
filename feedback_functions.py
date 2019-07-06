@@ -135,224 +135,254 @@ def p2p_positions_gen_fcn(low, high, number_of_positions, duration_of_each_posit
 		random_array[int(ii*sample_no_of_each_position):int((ii+1)*sample_no_of_each_position)] = random_array_1position
 	return random_array
 
-def plot_comparison_figures_fcn(errors_all):
+def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 	plt.rcParams.update({'font.size': 12})
-	trial_number = errors_all[0].shape[1]
 	# plt 1: vs cycle period
-	plt.figure(figsize=(10, 6))
-	plt.plot(np.linspace(.1,10,trial_number), errors_all[0][0,:], np.linspace(.1,10,trial_number), errors_all[0][1,:], marker='.')
-	plt.ylim(0,.8)
-	ax = plt.gca()
-	xmin, xmax = ax.get_xbound()
-	mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[0][0,:].mean(),errors_all[0][0,:].mean()],color='C0', linestyle='--', alpha=.7)
-	ax.add_line(mean_error_wo)
-	mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[0][1,:].mean(),errors_all[0][1,:].mean()],color='C1', linestyle='--', alpha=.7)
-	ax.add_line(mean_error_wf)
-	#plt.title("Error as a function of cycle period")
-	plt.legend(["open-loop",'close-loop'])
-	plt.xlabel("cycle period (s)")
-	plt.ylabel("error (rads)")
-	plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
-	plt.savefig('./results/P_I/exp1.png')
-	plt.show()
+	if experiments_switch[0]:
+		plt.figure(figsize=(10, 6))
+		plt.plot(np.linspace(.1,10,trial_number), errors_all[0][0,:], np.linspace(.1,10,trial_number), errors_all[0][1,:], marker='.')
+		plt.ylim(0,.8)
+		ax = plt.gca()
+		xmin, xmax = ax.get_xbound()
+		mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[0][0,:].mean(),errors_all[0][0,:].mean()],color='C0', linestyle='--', alpha=.7)
+		ax.add_line(mean_error_wo)
+		mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[0][1,:].mean(),errors_all[0][1,:].mean()],color='C1', linestyle='--', alpha=.7)
+		ax.add_line(mean_error_wf)
+		#plt.title("Error as a function of cycle period")
+		plt.legend(["open-loop",'close-loop'])
+		plt.xlabel("cycle period (s)")
+		plt.ylabel("error (rads)")
+		plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
+		plt.savefig('./results/P_I/exp1.png')
+		plt.show()
+
 	#plt 2: 50 cyclical
-	plt.figure(figsize=(10, 6))
-	plt.plot(range(errors_all[1][0,:].shape[0]), errors_all[1][0,:], range(errors_all[1][0,:].shape[0]), errors_all[1][1,:], marker='.')
-	plt.ylim(0,.75)
-	ax = plt.gca()
-	xmin, xmax = ax.get_xbound()
-	mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[1][0,:].mean(),errors_all[1][0,:].mean()],color='C0', linestyle='--', alpha=.7)
-	ax.add_line(mean_error_wo)
-	mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[1][1,:].mean(),errors_all[1][1,:].mean()],color='C1', linestyle='--', alpha=.7)
-	ax.add_line(mean_error_wf)
-	#plt.title("Error values over a set of cyclical tasks")
-	plt.legend(["open-loop",'close-loop'])
-	plt.xlabel("trial #")
-	plt.ylabel("error (rads)")
-	plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
-	plt.savefig('./results/P_I/exp2.png')
-	plt.show()
+	if experiments_switch[1]:
+		plt.figure(figsize=(10, 6))
+		plt.plot(range(errors_all[1][0,:].shape[0]), errors_all[1][0,:], range(errors_all[1][0,:].shape[0]), errors_all[1][1,:], marker='.')
+		plt.ylim(0,.75)
+		ax = plt.gca()
+		xmin, xmax = ax.get_xbound()
+		mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[1][0,:].mean(),errors_all[1][0,:].mean()],color='C0', linestyle='--', alpha=.7)
+		ax.add_line(mean_error_wo)
+		mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[1][1,:].mean(),errors_all[1][1,:].mean()],color='C1', linestyle='--', alpha=.7)
+		ax.add_line(mean_error_wf)
+		#plt.title("Error values over a set of cyclical tasks")
+		plt.legend(["open-loop",'close-loop'])
+		plt.xlabel("trial #")
+		plt.ylabel("error (rads)")
+		plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
+		plt.savefig('./results/P_I/exp2.png')
+		plt.show()
+
 	#plt 3: 50 p2p
-	plt.figure(figsize=(10, 6))
-	plt.plot(range(errors_all[2][0,:].shape[0]), errors_all[2][0,:], range(errors_all[2][0,:].shape[0]), errors_all[2][1,:], marker='.')
-	plt.ylim(0,.75)
-	ax = plt.gca()
-	xmin, xmax = ax.get_xbound()
-	mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[2][0,:].mean(),errors_all[2][0,:].mean()],color='C0', linestyle='--', alpha=.7)
-	ax.add_line(mean_error_wo)
-	mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[2][1,:].mean(),errors_all[2][1,:].mean()],color='C1', linestyle='--', alpha=.7)
-	ax.add_line(mean_error_wf)
-	#plt.title("Error values over a set of point-to-point tasks")
-	plt.legend(["open-loop",'close-loop'])
-	plt.xlabel("trial #")
-	plt.ylabel("error (rads)")
-	plt.savefig('./results/P_I/exp3.png')
-	plt.show()
+	if experiments_switch[2]:
+		plt.figure(figsize=(10, 6))
+		plt.plot(range(errors_all[2][0,:].shape[0]), errors_all[2][0,:], range(errors_all[2][0,:].shape[0]), errors_all[2][1,:], marker='.')
+		plt.ylim(0,.75)
+		ax = plt.gca()
+		xmin, xmax = ax.get_xbound()
+		mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[2][0,:].mean(),errors_all[2][0,:].mean()],color='C0', linestyle='--', alpha=.7)
+		ax.add_line(mean_error_wo)
+		mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[2][1,:].mean(),errors_all[2][1,:].mean()],color='C1', linestyle='--', alpha=.7)
+		ax.add_line(mean_error_wf)
+		#plt.title("Error values over a set of point-to-point tasks")
+		plt.legend(["open-loop",'close-loop'])
+		plt.xlabel("trial #")
+		plt.ylabel("error (rads)")
+		plt.savefig('./results/P_I/exp3.png')
+		plt.show()
+	
 	# plt 4: compare all
-	plt.figure(figsize=(10, 6))
-	plt.bar(range(5), [errors_all[1][0,:].mean(axis=0), errors_all[2][0,:].mean(axis=0), errors_all[0][0,:].mean(axis=0), 
-			errors_all[4][0,:].mean(axis=0), errors_all[9].mean(axis=2)[0,:].mean()])
-	plt.bar(range(5), [errors_all[1][1,:].mean(axis=0), errors_all[2][1,:].mean(axis=0), errors_all[0][1,:].mean(axis=0),
-			errors_all[4][1,:].mean(axis=0), errors_all[9].mean(axis=2)[1,:].mean()])
-	plt.ylim(0,.85)
-	plt.legend(["open-loop",'close-loop'])
-	plt.ylabel("mean error (rads)")
-	plt.xticks(range(6),('cyclical','point-to-point', 'cycle period', 'with contact', 'refinements\n(w/ shorter babbling)'), rotation=7)
-	plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
-	plt.savefig('./results/P_I/mean_errors.png')
-	plt.show()
-	# errors_all = [exp2_average_error]
-	# plt.figure()
-	# plt.plot(range(errors_all[0][0,:].shape[0]), errors_all[0][0,:], range(errors_all[0][0,:].shape[0]), errors_all[0][1,:])
-	# plt.show(block=True)
+	if experiments_switch[3]:
+		plt.figure(figsize=(10, 6))
+		plt.bar(range(5), [errors_all[1][0,:].mean(axis=0), errors_all[2][0,:].mean(axis=0), errors_all[0][0,:].mean(axis=0), 
+				errors_all[4][0,:].mean(axis=0), errors_all[9].mean(axis=2)[0,:].mean()])
+		plt.bar(range(5), [errors_all[1][1,:].mean(axis=0), errors_all[2][1,:].mean(axis=0), errors_all[0][1,:].mean(axis=0),
+				errors_all[4][1,:].mean(axis=0), errors_all[9].mean(axis=2)[1,:].mean()])
+		plt.ylim(0,.85)
+		plt.legend(["open-loop",'close-loop'])
+		plt.ylabel("mean error (rads)")
+		plt.xticks(range(6),('cyclical','point-to-point', 'cycle period', 'with contact', 'refinements\n(w/ shorter babbling)'), rotation=7)
+		plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
+		plt.savefig('./results/P_I/mean_errors.png')
+		plt.show()
+		# errors_all = [exp2_average_error]
+		# plt.figure()
+		# plt.plot(range(errors_all[0][0,:].shape[0]), errors_all[0][0,:], range(errors_all[0][0,:].shape[0]), errors_all[0][1,:])
+		# plt.show(block=True)
 
 	#plt 5: with contact
-	plt.figure(figsize=(10, 6))
-	plt.plot(range(errors_all[4][0,:].shape[0]), errors_all[4][0,:], range(errors_all[4][0,:].shape[0]), errors_all[4][1,:], marker='.')
-	plt.ylim(0,1)
-	ax = plt.gca()
-	xmin, xmax = ax.get_xbound()
-	mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[4][0,:].mean(),errors_all[4][0,:].mean()],color='C0', linestyle='--', alpha=.7)
-	ax.add_line(mean_error_wo)
-	mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[4][1,:].mean(),errors_all[4][1,:].mean()],color='C1', linestyle='--', alpha=.7)
-	ax.add_line(mean_error_wf)
-	#plt.title("Error values when intense contact dynamics are introduced")
-	plt.legend(["open-loop",'close-loop'])
-	plt.xlabel("trial #")
-	plt.ylabel("error (rads)")
-	plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
-	plt.savefig('./results/P_I/exp5.png')
-	plt.show()
+	if experiments_switch[4]:
+		plt.figure(figsize=(10, 6))
+		plt.plot(range(errors_all[4][0,:].shape[0]), errors_all[4][0,:], range(errors_all[4][0,:].shape[0]), errors_all[4][1,:], marker='.')
+		plt.ylim(0,1)
+		ax = plt.gca()
+		xmin, xmax = ax.get_xbound()
+		mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[4][0,:].mean(),errors_all[4][0,:].mean()],color='C0', linestyle='--', alpha=.7)
+		ax.add_line(mean_error_wo)
+		mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[4][1,:].mean(),errors_all[4][1,:].mean()],color='C1', linestyle='--', alpha=.7)
+		ax.add_line(mean_error_wf)
+		#plt.title("Error values when intense contact dynamics are introduced")
+		plt.legend(["open-loop",'close-loop'])
+		plt.xlabel("trial #")
+		plt.ylabel("error (rads)")
+		plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
+		plt.savefig('./results/P_I/exp5.png')
+		plt.show()
 
 	#plt 6: ever learn ones
-	plt.figure(figsize=(10, 6))
-	plt.plot(range(errors_all[5][0,:].shape[0]), errors_all[5][0,:], range(errors_all[5][0,:].shape[0]), errors_all[5][1,:],  range(errors_all[5][0,:].shape[0]), errors_all[5][2,:], marker='.')
-	plt.ylim(0,.25)
-	ax = plt.gca()
-	xmin, xmax = ax.get_xbound()
-	mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[5][0,:].mean(),errors_all[5][0,:].mean()],color='C0', linestyle='--', alpha=.7)
-	ax.add_line(mean_error_wo)
-	mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[5][1,:].mean(),errors_all[5][1,:].mean()],color='C1', linestyle='--', alpha=.7)
-	ax.add_line(mean_error_wf)
-	mean_error_wf_t = mlines.Line2D([xmin,xmax], [errors_all[5][2,:].mean(),errors_all[5][2,:].mean()],color='C2', linestyle='--', alpha=.7)
-	ax.add_line(mean_error_wf_t)
-	plt.title("Error values as a function of refinements (same desired movements)")
-	plt.legend(["without feedback",'with feedback', 'without feedback alt'])
-	plt.xlabel("trial #")
-	plt.ylabel("error (rads)")
-	plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
-	plt.savefig('./results/P_I/exp6.png')
-	plt.show()
+	if experiments_switch[5]:
+		plt.figure(figsize=(10, 6))
+		plt.plot(range(errors_all[5][0,:].shape[0]), errors_all[5][0,:], range(errors_all[5][0,:].shape[0]), errors_all[5][1,:],  range(errors_all[5][0,:].shape[0]), errors_all[5][2,:], marker='.')
+		plt.ylim(0,.25)
+		ax = plt.gca()
+		xmin, xmax = ax.get_xbound()
+		mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[5][0,:].mean(),errors_all[5][0,:].mean()],color='C0', linestyle='--', alpha=.7)
+		ax.add_line(mean_error_wo)
+		mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[5][1,:].mean(),errors_all[5][1,:].mean()],color='C1', linestyle='--', alpha=.7)
+		ax.add_line(mean_error_wf)
+		mean_error_wf_t = mlines.Line2D([xmin,xmax], [errors_all[5][2,:].mean(),errors_all[5][2,:].mean()],color='C2', linestyle='--', alpha=.7)
+		ax.add_line(mean_error_wf_t)
+		plt.title("Error values as a function of refinements (same desired movements)")
+		plt.legend(["without feedback",'with feedback', 'without feedback alt'])
+		plt.xlabel("trial #")
+		plt.ylabel("error (rads)")
+		plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
+		plt.savefig('./results/P_I/exp6.png')
+		plt.show()
 
 	#plt 7: ever learn random
-	plt.figure(figsize=(10, 6))
-	plt.plot(range(errors_all[6][0,:].shape[0]), errors_all[6][0,:], range(errors_all[6][0,:].shape[0]), errors_all[6][1,:], range(errors_all[6][0,:].shape[0]), errors_all[6][2,:], marker='.')
-	plt.ylim(0,.6)
-	ax = plt.gca()
-	xmin, xmax = ax.get_xbound()
-	mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[6][0,:].mean(),errors_all[6][0,:].mean()],color='C0', linestyle='--', alpha=.7)
-	ax.add_line(mean_error_wo)
-	mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[6][1,:].mean(),errors_all[6][1,:].mean()],color='C1', linestyle='--', alpha=.7)
-	ax.add_line(mean_error_wf)
-	mean_error_wf_t = mlines.Line2D([xmin,xmax], [errors_all[6][2,:].mean(),errors_all[6][2,:].mean()],color='C2', linestyle='--', alpha=.7)
-	ax.add_line(mean_error_wf_t)
-	plt.title("Error values as a function of refinements (different desired movements)")
-	plt.legend(['without feedback','with feedback', 'with feedback alt'])
-	plt.xlabel("trial #")
-	plt.ylabel("error (rads)")
-	plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
-	plt.savefig('./results/P_I/exp7.png')
-	plt.show()
+	if experiments_switch[6]:
+		plt.figure(figsize=(10, 6))
+		plt.plot(range(errors_all[6][0,:].shape[0]), errors_all[6][0,:], range(errors_all[6][0,:].shape[0]), errors_all[6][1,:], range(errors_all[6][0,:].shape[0]), errors_all[6][2,:], marker='.')
+		plt.ylim(0,.6)
+		ax = plt.gca()
+		xmin, xmax = ax.get_xbound()
+		mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[6][0,:].mean(),errors_all[6][0,:].mean()],color='C0', linestyle='--', alpha=.7)
+		ax.add_line(mean_error_wo)
+		mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[6][1,:].mean(),errors_all[6][1,:].mean()],color='C1', linestyle='--', alpha=.7)
+		ax.add_line(mean_error_wf)
+		mean_error_wf_t = mlines.Line2D([xmin,xmax], [errors_all[6][2,:].mean(),errors_all[6][2,:].mean()],color='C2', linestyle='--', alpha=.7)
+		ax.add_line(mean_error_wf_t)
+		plt.title("Error values as a function of refinements (different desired movements)")
+		plt.legend(['without feedback','with feedback', 'with feedback alt'])
+		plt.xlabel("trial #")
+		plt.ylabel("error (rads)")
+		plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
+		plt.savefig('./results/P_I/exp7.png')
+		plt.show()
 
 	#plt 8: delay
-	fig = plt.figure(figsize=(10, 6))
-	ax = fig.add_subplot(111, projection='3d')
+	if experiments_switch[7]:
+		fig = plt.figure(figsize=(10, 6))
+		ax = fig.add_subplot(111, projection='3d')
 
-	# Grab some test data.
-	X, Y, Z = axes3d.get_test_data(0.05)
-	exp8_average_error = errors_all[7]
-	X_1 = np.linspace(0,20*5,11)
-	X = np.tile(X_1, [exp8_average_error.shape[1], 1]).transpose()
-	Y_1 = np.arange(1,exp8_average_error.shape[1]+1)
-	Y = np.tile(Y_1, [11,1])
-	Z = exp8_average_error[1:,:]
-	# Plot a basic wireframe.
+		# Grab some test data.
+		X, Y, Z = axes3d.get_test_data(0.05)
+		exp8_average_error = errors_all[7]
+		X_1 = np.linspace(0,20*5,11)
+		X = np.tile(X_1, [exp8_average_error.shape[1], 1]).transpose()
+		Y_1 = np.arange(1,exp8_average_error.shape[1]+1)
+		Y = np.tile(Y_1, [11,1])
+		Z = exp8_average_error[1:,:]
+		# Plot a basic wireframe.
 
-	ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=plt.cm.YlGnBu_r, alpha=.9)
-	Z_ol_1 = exp8_average_error[0,:]
-	Z_ol = np.tile(Z_ol_1,[11,1])
-	ax.plot_wireframe(X, Y, Z_ol, rstride=5, cstride=10, color="lightcoral", alpha=.7)
-	ax.view_init(elev=21., azim=-114.)
-	ax.set_xlabel('delays (ms)')
-	ax.set_ylabel('trial #')
-	ax.set_zlabel('mean error (rads)')
-	plt.title('Error for a set of cyclical trials as a function of delay')
-	plt.savefig('./results/P_I/exp8.png')
-	plt.show()
+		ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=plt.cm.YlGnBu_r, alpha=.9)
+		Z_ol_1 = exp8_average_error[0,:]
+		Z_ol = np.tile(Z_ol_1,[11,1])
+		ax.plot_wireframe(X, Y, Z_ol, rstride=5, cstride=10, color="lightcoral", alpha=.7)
+		ax.view_init(elev=21., azim=-114.)
+		ax.set_xlabel('delays (ms)')
+		ax.set_ylabel('trial #')
+		ax.set_zlabel('mean error (rads)')
+		plt.title('Error for a set of cyclical trials as a function of delay')
+		plt.savefig('./results/P_I/exp8.png')
+		plt.show()
 
 	#plt 9: babbling mesh
-	exp9_average_error=errors_all[8]
-	fig = plt.figure(figsize=(10, 6))
-	ax = fig.add_subplot(111, projection='3d')
-	trials_num = exp9_average_error.shape[1]
-	babblings_num = exp9_average_error.shape[2]
-	X_1 = np.linspace(0,trials_num,trials_num)
-	X = np.tile(X_1, [babblings_num, 1]).transpose()
-	Y_1 = np.array([1, 2.5, 5])
-	Y = np.tile(Y_1, [trials_num, 1])
-	Z = exp9_average_error[0,:,:]
-	ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color='C0', alpha=1)
-	Z = exp9_average_error[1,:,:]
-	ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color = 'C1', alpha=.5)
-	Z = exp9_average_error[2,:,:]
-	ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color='C2', alpha=.5)
-	ax.set_zlim(0,.25)
-	ax.view_init(elev=34., azim=-47.)
-	ax.set_xlabel('refinement #')
-	ax.set_ylabel('babbling duration (minutes)')
-	ax.set_zlabel('mean error (rads)')
-	plt.savefig('./results/P_I/exp9.png')
-	plt.show()
+	if experiments_switch[8]:
+		exp9_average_error=errors_all[8]
+		fig = plt.figure(figsize=(10, 6))
+		ax = fig.add_subplot(111, projection='3d')
+		trials_num = exp9_average_error.shape[1]
+		babblings_num = exp9_average_error.shape[2]
+		X_1 = np.linspace(0,trials_num,trials_num)
+		X = np.tile(X_1, [babblings_num, 1]).transpose()
+		Y_1 = np.array([1, 2.5, 5])
+		Y = np.tile(Y_1, [trials_num, 1])
+		Z = exp9_average_error[0,:,:]
+		ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color='C0', alpha=1)
+		Z = exp9_average_error[1,:,:]
+		ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color = 'C1', alpha=.5)
+		Z = exp9_average_error[2,:,:]
+		ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color='C2', alpha=.5)
+		ax.set_zlim(0,.25)
+		ax.view_init(elev=34., azim=-47.)
+		ax.set_xlabel('refinement #')
+		ax.set_ylabel('babbling duration (minutes)')
+		ax.set_zlabel('mean error (rads)')
+		plt.savefig('./results/P_I/exp9.png')
+		plt.show()
 
 	#plt 10 & 10s: refinements over a set of random trials
-	exp10_average_error=errors_all[9]
+	if experiments_switch[9]:
+		exp10_average_error=errors_all[9]
 
-	fig = plt.figure(figsize=(10, 6))
-	ax = fig.add_subplot(111, projection='3d')
-	trials_num = exp10_average_error.shape[1]
-	rep_num = exp10_average_error.shape[2]
-	X_1 = np.linspace(0,trials_num,trials_num)
-	X = np.tile(X_1, [rep_num, 1]).transpose()
-	Y_1 = np.linspace(0,rep_num,rep_num)
-	Y = np.tile(Y_1, [trials_num, 1])
-	Z = exp10_average_error[0,:,:]
-	ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color='C0', alpha=1)
-	Z = exp10_average_error[1,:,:]
-	ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color = 'C1', alpha=.5)
-	Z = exp10_average_error[2,:,:]
-	ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color='C2', alpha=.5)
-	Z = exp10_average_error[3,:,:]
-	ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color='C3', alpha=.5)
-	ax.set_zlim(0,.8)
-	ax.view_init(elev=34., azim=-47.)
-	ax.set_xlabel('refinement #')
-	ax.set_ylabel('tasks')
-	ax.set_zlabel('mean error (rads)')
-	plt.savefig('./results/P_I/exp10_S.png')
-	plt.show()
+		fig = plt.figure(figsize=(10, 6))
+		ax = fig.add_subplot(111, projection='3d')
+		trials_num = exp10_average_error.shape[1]
+		rep_num = exp10_average_error.shape[2]
+		X_1 = np.linspace(0,trials_num,trials_num)
+		X = np.tile(X_1, [rep_num, 1]).transpose()
+		Y_1 = np.linspace(0,rep_num,rep_num)
+		Y = np.tile(Y_1, [trials_num, 1])
+		Z = exp10_average_error[0,:,:]
+		ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color='C0', alpha=1)
+		Z = exp10_average_error[1,:,:]
+		ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color = 'C1', alpha=.5)
+		Z = exp10_average_error[2,:,:]
+		ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color='C2', alpha=.5)
+		Z = exp10_average_error[3,:,:]
+		ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color='C3', alpha=.5)
+		ax.set_zlim(0,.8)
+		ax.view_init(elev=34., azim=-47.)
+		ax.set_xlabel('refinement #')
+		ax.set_ylabel('tasks')
+		ax.set_zlabel('mean error (rads)')
+		plt.savefig('./results/P_I/exp10_S.png')
+		plt.show()
 
-	fig = plt.figure(figsize=(10, 6))
-	ax = fig.add_subplot(111)
-	means = exp10_average_error.mean(axis=2)
-	ax.errorbar(np.linspace(.85,24.85,25),means[0,:],yerr=exp10_average_error[0].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5)	# ol
-	ax.errorbar(np.linspace(1.05,25.05,25),means[1,:],yerr=exp10_average_error[1].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5)	# cl
-	ax.errorbar(np.linspace(.95,24.95,25),means[2,:],yerr=exp10_average_error[2].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5)	# ol/trained with cl mdl
-	ax.errorbar(np.linspace(1.15,25.15,25),means[3,:],yerr=exp10_average_error[3].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5)	# cl/trained with ol mdl
-	ax.set_xlabel('refinement #')
-	ax.set_ylabel('mean error (rads)')
-	plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
-	ax.legend(['open-loop','close-loop','ol w/ cl model','cl w/ ol model'])
-	plt.savefig('./results/P_I/exp10.png')
-	plt.show()
+		fig = plt.figure(figsize=(10, 6))
+		ax = fig.add_subplot(111)
+		means = exp10_average_error.mean(axis=2)
+		ax.errorbar(np.linspace(.85,24.85,25),means[0,:],yerr=exp10_average_error[0].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5)	# ol
+		ax.errorbar(np.linspace(1.05,25.05,25),means[1,:],yerr=exp10_average_error[1].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5)	# cl
+		ax.errorbar(np.linspace(.95,24.95,25),means[2,:],yerr=exp10_average_error[2].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5)	# ol/trained with cl mdl
+		ax.errorbar(np.linspace(1.15,25.15,25),means[3,:],yerr=exp10_average_error[3].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5)	# cl/trained with ol mdl
+		ax.set_xlabel('refinement #')
+		ax.set_ylabel('mean error (rads)')
+		plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
+		ax.legend(['open-loop','close-loop','ol w/ cl model','cl w/ ol model'])
+		plt.savefig('./results/P_I/exp10.png')
+		plt.show()
+
+
+	# exp 11 PI sensitivity
+	if experiments_switch[10]:
+		exp11_average_error= errors_all[10]
+		powers = np.arange(-np.floor(exp11_average_error.shape[1]/2), np.floor(exp11_average_error.shape[1]/2)+1, 1)
+		plt.figure(figsize=(10, 6))
+		plt.bar(powers-.05, exp11_average_error[0,:], alpha=.9)
+		plt.bar(powers+.05, exp11_average_error[1,:], alpha=.9)
+		plt.ylim(0,.75)
+		plt.legend(["open-loop",'close-loop'])
+		plt.ylabel("mean error (rads)")
+		#plt.xticks(range(6),('cyclical','point-to-point', 'cycle period', 'with contact', 'refinements\n(w/ shorter babbling)'), rotation=7)
+		#plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
+		plt.savefig('./results/P_I/exp11.png')
+		plt.xlabel('$N\:_{(in\:  2^{N} *[P, I])}$')
+		plt.savefig('./results/P_I/exp11.png')
+		plt.show()
 
 #import pdb; pdb.set_trace()

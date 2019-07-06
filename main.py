@@ -25,10 +25,10 @@ I = np.array([2, 6])
 
 
 np.random.seed(0)
-experiments_switch = np.zeros(10,)#np.ones(10,)#[0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
-experiments_switch[:5]=1
-trial_number = 1
-plot_outputs=True
+experiments_switch = np.ones(11,)#np.ones(10,)#[0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
+experiments_switch[-1]=1
+trial_number = 2
+plot_outputs = False
 for ii in range(len(experiments_switch)):
 	globals()["exp{}_average_error".format(ii+1)]=np.zeros([2,1])
 	exp6_average_error = np.zeros([3,1])
@@ -249,11 +249,38 @@ if experiments_switch[9] == 1: # everlearn random
 			cum_kinematics_cl, cum_activations_cl = concatinate_data_fcn( cum_kinematics_cl, cum_activations_cl, real_attempt_kinematics_cl, real_attempt_activations_cl, throw_percentage = 0.20)
 			exp10_model_cl = inverse_mapping_fcn(cum_kinematics_cl, cum_activations_cl, prior_model = exp10_model_cl)
 
-errors_all = [exp1_average_error, exp2_average_error, exp3_average_error, exp4_average_error, exp5_average_error, exp6_average_error, exp7_average_error, exp8_average_error, exp9_average_error, exp10_average_error]
-#pickle.dump([errors_all],open("results/P_I/feedback_errors_P_I_V4_50.sav", 'wb')) # saving the results with only P
-[errors_all] = pickle.load(open("results/P_I/feedback_errors_P_I_V4_50.sav", 'rb')) # loading the results with only P
+if experiments_switch[10] ==11: # cyclical on air
+	rep_num = trial_number
+	powers=np.arange(-6,7,1)
+	coefficients = np.power(2.,powers)
+	P_exp11 = np.dot(coefficients[:,None],P[None,:])
+	I_exp11 = np.dot(coefficients[:,None],I[None,:])
+	PI_sets_no = P_exp11.shape[0]
+	exp11_average_error = np.zeros([2,PI_sets_no])
+	for jj in range(PI_sets_no):
+		np.random.seed(0)
+		current_average_error = np.zeros([2,rep_num])
+		for ii in range(rep_num):
+			features = np.random.rand(10)
+			[q0_filtered, q1_filtered]  = feat_to_positions_fcn(features, timestep=0.005, cycle_duration_in_seconds = 2.5, show=False)
+			#import pdb; pdb.set_trace()
+			q0_filtered_10 = np.tile(q0_filtered,10)
+			q1_filtered_10 = np.tile(q1_filtered,10)
+			desired_kinematics = positions_to_kinematics_fcn(q0_filtered_10, q1_filtered_10, timestep = 0.005)
+			current_average_error[0,ii], _, _ = openloop_run_fcn(model=model, desired_kinematics=desired_kinematics, plot_outputs=False, Mj_render=False)
+			current_average_error[1,ii], _, _ = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics, P=P_exp11[jj], I=I_exp11[jj], plot_outputs=False, Mj_render=False) # K = [10, 15]
+		#print("error_without: ", exp2_average_error[0,0], "error with: ", exp2_average_error[1,0])
+		
 
-#import pdb; pdb.set_trace()
-# plot_comparison_figures_fcn(errors_all)
+		exp11_average_error[0, jj] = current_average_error[0,:].mean()
+		exp11_average_error[1, jj] = current_average_error[1,:].mean()
+
+	#import pdb; pdb.set_trace()
+
+errors_all = [exp1_average_error, exp2_average_error, exp3_average_error, exp4_average_error, exp5_average_error, exp6_average_error, exp7_average_error, exp8_average_error, exp9_average_error, exp10_average_error, exp11_average_error]
+pickle.dump([errors_all, trial_number],open("results/P_I/feedback_errors_P_I_V5_50.sav", 'wb')) # saving the results with only P
+[errors_all, trial_number] = pickle.load(open("results/P_I/feedback_errors_P_I_V5_50.sav", 'rb')) # loading the results with only P
+
+plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number)
 
 #import pdb; pdb.set_trace()
