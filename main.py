@@ -8,15 +8,15 @@ from feedback_functions import *
 
 simplefilter(action='ignore', category=FutureWarning)
 
-# np.random.seed(0)
-# [babbling_kinematics, babbling_activations] = babbling_fcn(simulation_minutes=5)
-# model = inverse_mapping_fcn(kinematics=babbling_kinematics, activations=babbling_activations)
-# cum_kinematics = babbling_kinematics
-# cum_activations = babbling_activations
+np.random.seed(0)
+[babbling_kinematics, babbling_activations] = babbling_fcn(simulation_minutes=5)
+model = inverse_mapping_fcn(kinematics=babbling_kinematics, activations=babbling_activations)
+cum_kinematics = babbling_kinematics
+cum_activations = babbling_activations
 
 
 
-# pickle.dump([model,cum_kinematics, cum_activations],open("results/mlp_model.sav", 'wb'))
+pickle.dump([model,cum_kinematics, cum_activations],open("results/mlp_model.sav", 'wb'))
 [model,cum_kinematics, cum_activations] = pickle.load(open("results/mlp_model.sav", 'rb')) # loading the model
 
 
@@ -25,7 +25,7 @@ I = np.array([2, 6])
 
 
 np.random.seed(0)
-experiments_switch = np.ones(11,)#np.ones(10,)#[0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
+experiments_switch = np.zeros(11,)#np.ones(10,)#[0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
 trial_number = 50
 plot_outputs = False
 for ii in range(len(experiments_switch)):
@@ -278,7 +278,7 @@ if experiments_switch[10] ==1: # cyclical on air
 
 errors_all = [exp1_average_error, exp2_average_error, exp3_average_error, exp4_average_error, exp5_average_error, exp6_average_error, exp7_average_error, exp8_average_error, exp9_average_error, exp10_average_error, exp11_average_error]
 pickle.dump([errors_all, trial_number],open("results/P_I/feedback_errors_P_I_V5_50.sav", 'wb')) # saving the results with only P
-[errors_all, trial_number] = pickle.load(open("results/P_I/feedback_errors_P_I_V5_50.sav", 'rb')) # loading the results with only P
+#[errors_all, trial_number] = pickle.load(open("results/P_I/feedback_errors_P_I_V5_50.sav", 'rb')) # loading the results with only P
 plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number)
 
 #import pdb; pdb.set_trace()
