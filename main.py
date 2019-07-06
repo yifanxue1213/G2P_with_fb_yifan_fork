@@ -26,8 +26,7 @@ I = np.array([2, 6])
 
 np.random.seed(0)
 experiments_switch = np.ones(11,)#np.ones(10,)#[0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
-experiments_switch[-1]=1
-trial_number = 2
+trial_number = 50
 plot_outputs = False
 for ii in range(len(experiments_switch)):
 	globals()["exp{}_average_error".format(ii+1)]=np.zeros([2,1])
@@ -39,7 +38,7 @@ for ii in range(len(experiments_switch)):
 	
 if experiments_switch[0] ==1: # as a function of cycle period
 	features=np.ones(10,)
-	cycle_durations = np.linspace(2.5,2.5,trial_number)
+	cycle_durations = np.linspace(.5,10,trial_number)
 	test1_no = cycle_durations.shape[0]
 	exp1_average_error = np.zeros([2,test1_no]) # first row open-loop and second row close-loop
 	#cycle length experiment
@@ -249,7 +248,7 @@ if experiments_switch[9] == 1: # everlearn random
 			cum_kinematics_cl, cum_activations_cl = concatinate_data_fcn( cum_kinematics_cl, cum_activations_cl, real_attempt_kinematics_cl, real_attempt_activations_cl, throw_percentage = 0.20)
 			exp10_model_cl = inverse_mapping_fcn(cum_kinematics_cl, cum_activations_cl, prior_model = exp10_model_cl)
 
-if experiments_switch[10] ==11: # cyclical on air
+if experiments_switch[10] ==1: # cyclical on air
 	rep_num = trial_number
 	powers=np.arange(-6,7,1)
 	coefficients = np.power(2.,powers)
@@ -280,7 +279,6 @@ if experiments_switch[10] ==11: # cyclical on air
 errors_all = [exp1_average_error, exp2_average_error, exp3_average_error, exp4_average_error, exp5_average_error, exp6_average_error, exp7_average_error, exp8_average_error, exp9_average_error, exp10_average_error, exp11_average_error]
 pickle.dump([errors_all, trial_number],open("results/P_I/feedback_errors_P_I_V5_50.sav", 'wb')) # saving the results with only P
 [errors_all, trial_number] = pickle.load(open("results/P_I/feedback_errors_P_I_V5_50.sav", 'rb')) # loading the results with only P
-
 plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number)
 
 #import pdb; pdb.set_trace()

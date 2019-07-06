@@ -496,8 +496,8 @@ def run_activations_fcn(est_activations, model_ver=0, timestep=0.005, Mj_render=
 	return real_attempt_kinematics, real_attempt_activations, chassis_pos
 
 def error_cal_fcn(input1, input2):
-#	error = np.mean(np.abs(input1-input2))
-	error = np.sqrt(np.power(input1-input2,2).mean())
+#	error = np.mean(np.abs(input1-input2)) # mean abs value
+	error = np.sqrt(np.power(input1-input2,2).mean()) # Root Mean Square Error (RMSE)
 	return error
 
 #import pdb; pdb.set_trace()

@@ -140,8 +140,8 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 	# plt 1: vs cycle period
 	if experiments_switch[0]:
 		plt.figure(figsize=(10, 6))
-		plt.plot(np.linspace(.1,10,trial_number), errors_all[0][0,:], np.linspace(.1,10,trial_number), errors_all[0][1,:], marker='.')
-		plt.ylim(0,.8)
+		plt.plot(np.linspace(.5,10,trial_number), errors_all[0][0,:], np.linspace(.5,10,trial_number), errors_all[0][1,:], marker='.')
+		plt.ylim(0,.6)
 		ax = plt.gca()
 		xmin, xmax = ax.get_xbound()
 		mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[0][0,:].mean(),errors_all[0][0,:].mean()],color='C0', linestyle='--', alpha=.7)
