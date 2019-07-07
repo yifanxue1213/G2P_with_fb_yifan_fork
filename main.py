@@ -8,15 +8,15 @@ from feedback_functions import *
 
 simplefilter(action='ignore', category=FutureWarning)
 
-np.random.seed(0)
-[babbling_kinematics, babbling_activations] = babbling_fcn(simulation_minutes=5)
-model = inverse_mapping_fcn(kinematics=babbling_kinematics, activations=babbling_activations)
-cum_kinematics = babbling_kinematics
-cum_activations = babbling_activations
+# np.random.seed(0)
+# [babbling_kinematics, babbling_activations] = babbling_fcn(simulation_minutes=5)
+# model = inverse_mapping_fcn(kinematics=babbling_kinematics, activations=babbling_activations)
+# cum_kinematics = babbling_kinematics
+# cum_activations = babbling_activations
 
 
 
-pickle.dump([model,cum_kinematics, cum_activations],open("results/mlp_model.sav", 'wb'))
+# pickle.dump([model,cum_kinematics, cum_activations],open("results/mlp_model.sav", 'wb'))
 [model,cum_kinematics, cum_activations] = pickle.load(open("results/mlp_model.sav", 'rb')) # loading the model
 
 
@@ -26,9 +26,10 @@ I = np.array([2, 6])
 
 np.random.seed(0)
 experiments_switch = np.ones(11,)#np.ones(10,)#[0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
-#experiments_switch[1]=1
+#experiments_switch[4]=1
 trial_number = 50
 plot_outputs = False
+Mj_render = False
 for ii in range(len(experiments_switch)):
 	globals()["exp{}_average_error".format(ii+1)]=np.zeros([2,1])
 	exp6_average_error = np.zeros([3,1])
@@ -52,6 +53,7 @@ if experiments_switch[0] ==1: # as a function of cycle period
 		exp1_average_error[1,ii], _, _ = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics, P=P, I=I, plot_outputs=plot_outputs, Mj_render=False) # K = [10, 15]
 
 if experiments_switch[1] ==1: # cyclical on air
+	np.random.seed(0)
 	test2_no = trial_number
 	exp2_average_error = np.zeros([2,test2_no])
 	for ii in range(test2_no):
@@ -66,6 +68,7 @@ if experiments_switch[1] ==1: # cyclical on air
 		#print("error_without: ", exp2_average_error[0,0], "error with: ", exp2_average_error[1,0])
 
 if experiments_switch[2] ==1: # p2p
+	np.random.seed(0)
 	test3_no = trial_number
 	exp3_average_error = np.zeros([2,test3_no])
 	for ii in range(test3_no):
@@ -93,6 +96,7 @@ if experiments_switch[3] ==1:	# standing up against weight
 	exp4_average_error[1,:], _, _ = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics,  P=P, I=I, model_ver=3, plot_outputs=False, Mj_render=False)
 
 if experiments_switch[4] == 1: # walking; contact dynamics
+	np.random.seed(0)
 	test5_no = trial_number
 	exp5_average_error = np.zeros([2,test5_no])
 	for ii in range(test5_no):
@@ -102,8 +106,8 @@ if experiments_switch[4] == 1: # walking; contact dynamics
 		q0_filtered_10 = np.tile(q0_filtered,10)
 		q1_filtered_10 = np.tile(q1_filtered,10)
 		desired_kinematics = positions_to_kinematics_fcn(q0_filtered_10, q1_filtered_10, timestep = 0.005)
-		exp5_average_error[0,ii], _, _ = openloop_run_fcn(model=model, desired_kinematics=desired_kinematics, model_ver=2, plot_outputs=plot_outputs, Mj_render=False)
-		exp5_average_error[1,ii], _, _ = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics, model_ver=2, P=P, I=I, plot_outputs=plot_outputs, Mj_render=False) # K = [10, 15]
+		exp5_average_error[0,ii], _, _ = openloop_run_fcn(model=model, desired_kinematics=desired_kinematics, model_ver=2, plot_outputs=plot_outputs, Mj_render=Mj_render)
+		exp5_average_error[1,ii], _, _ = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics, model_ver=2, P=P, I=I, plot_outputs=plot_outputs, Mj_render=Mj_render) # K = [10, 15]
 
 if experiments_switch[5] == 1: # everlearn ones
 	np.random.seed(0)
@@ -279,8 +283,8 @@ if experiments_switch[10] ==1: # cyclical on air
 
 #experiments_switch = np.ones(11,)
 errors_all = [exp1_average_error, exp2_average_error, exp3_average_error, exp4_average_error, exp5_average_error, exp6_average_error, exp7_average_error, exp8_average_error, exp9_average_error, exp10_average_error, exp11_average_error]
-pickle.dump([errors_all, trial_number],open("results/P_I/feedback_errors_P_I_V7_50.sav", 'wb')) # saving the results with only P
-[errors_all, trial_number] = pickle.load(open("results/P_I/feedback_errors_P_I_V7_50.sav", 'rb')) # loading the results with only P
+#pickle.dump([errors_all, trial_number],open("results/P_I/feedback_errors_P_I_V8_50.sav", 'wb')) # saving the results with only P
+[errors_all, trial_number] = pickle.load(open("results/P_I/feedback_errors_P_I_V8_50.sav", 'rb')) # loading the results with only P
 # experiments_switch = np.zeros(11,)
 # experiments_switch[7] =1
 plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number)

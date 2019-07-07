@@ -19,7 +19,7 @@
     <default>
         <joint type="hinge" pos="0 0 0" axis="0 1 0" limited="true" damping="1" frictionloss="3" />
         <tendon stiffness = "0"/>
-        <muscle ctrllimited="true" ctrlrange="0 1" force="7000" />
+        <muscle ctrllimited="true" ctrlrange="0 1" force="6000" />
     </default>
 
     <asset>
