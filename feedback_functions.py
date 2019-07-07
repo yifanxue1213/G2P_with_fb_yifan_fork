@@ -296,7 +296,7 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 		ax.set_xlabel('delays (ms)')
 		ax.set_ylabel('trial #')
 		ax.set_zlabel('mean error (rads)')
-		plt.title('Error for a set of cyclical trials as a function of delay')
+		#plt.title('Error for a set of cyclical trials as a function of delay')
 		plt.savefig('./results/P_I/exp8.png')
 		plt.show()
 

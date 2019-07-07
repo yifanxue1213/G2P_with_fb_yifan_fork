@@ -25,7 +25,8 @@ I = np.array([2, 6])
 
 
 np.random.seed(0)
-experiments_switch = np.zeros(11,)#np.ones(10,)#[0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
+experiments_switch = np.ones(11,)#np.ones(10,)#[0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
+#experiments_switch[1]=1
 trial_number = 50
 plot_outputs = False
 for ii in range(len(experiments_switch)):
@@ -276,9 +277,12 @@ if experiments_switch[10] ==1: # cyclical on air
 
 	#import pdb; pdb.set_trace()
 
+#experiments_switch = np.ones(11,)
 errors_all = [exp1_average_error, exp2_average_error, exp3_average_error, exp4_average_error, exp5_average_error, exp6_average_error, exp7_average_error, exp8_average_error, exp9_average_error, exp10_average_error, exp11_average_error]
-pickle.dump([errors_all, trial_number],open("results/P_I/feedback_errors_P_I_V5_50.sav", 'wb')) # saving the results with only P
-#[errors_all, trial_number] = pickle.load(open("results/P_I/feedback_errors_P_I_V5_50.sav", 'rb')) # loading the results with only P
+pickle.dump([errors_all, trial_number],open("results/P_I/feedback_errors_P_I_V7_50.sav", 'wb')) # saving the results with only P
+[errors_all, trial_number] = pickle.load(open("results/P_I/feedback_errors_P_I_V7_50.sav", 'rb')) # loading the results with only P
+# experiments_switch = np.zeros(11,)
+# experiments_switch[7] =1
 plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number)
 
 #import pdb; pdb.set_trace()

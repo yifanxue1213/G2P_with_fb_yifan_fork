@@ -3,7 +3,8 @@
     Ver 0 fixed on air
     Ver 1 can move on x axis
     Ver 2 can move on x axis and y axis (y with a spring damper)
-    Ver 2 way havier; can move on x axis and y axis (both freely)
+    Ver 3 way havier; can move on x axis and y axis (both freely)  
+    Ver 4 similar to 1 but with higher friction
     -->
 
     <option timestep="0.005" iterations="50" solver="Newton" tolerance="1e-10"/>
@@ -17,7 +18,7 @@
     <default>
         <joint type="hinge" pos="0 0 0" axis="0 1 0" limited="true" damping="1" frictionloss="3" />
         <tendon stiffness = "0"/>
-        <muscle ctrllimited="true" ctrlrange="0 1" scale="5000"/>
+        <muscle ctrllimited="true" ctrlrange="0 1" force="7000" />
     </default>
 
     <asset>
