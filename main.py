@@ -25,10 +25,10 @@ I = np.array([2, 6])
 
 
 np.random.seed(0)
-experiments_switch = np.ones(11,)#np.ones(10,)#[0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
-#experiments_switch[4]=1
-trial_number = 50
-plot_outputs = False
+experiments_switch = np.zeros(11,)#np.ones(10,)#[0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
+experiments_switch[0]=1
+trial_number = 1
+plot_outputs = True
 Mj_render = False
 for ii in range(len(experiments_switch)):
 	globals()["exp{}_average_error".format(ii+1)]=np.zeros([2,1])
@@ -40,7 +40,7 @@ for ii in range(len(experiments_switch)):
 	
 if experiments_switch[0] ==1: # as a function of cycle period
 	features=np.ones(10,)
-	cycle_durations = np.linspace(.5,10,trial_number)
+	cycle_durations = np.array([2.5,2.5])#np.linspace(.5,10,trial_number)
 	test1_no = cycle_durations.shape[0]
 	exp1_average_error = np.zeros([2,test1_no]) # first row open-loop and second row close-loop
 	#cycle length experiment
@@ -82,18 +82,18 @@ if experiments_switch[3] ==1:	# standing up against weight
 	test4_no = 1
 	exp4_average_error = np.zeros([2,test4_no])
 	q0 = p2p_positions_gen_fcn(low=np.pi/3, high=np.pi/3, number_of_positions=1, duration_of_each_position=1, timestep=.005)
-	q0 = np.append(q0,p2p_positions_gen_fcn(low=0, high=0, number_of_positions=1, duration_of_each_position=14, timestep=.005))
+	q0 = np.append(q0,p2p_positions_gen_fcn(low=0, high=0, number_of_positions=1, duration_of_each_position=6, timestep=.005))
 	q1 = p2p_positions_gen_fcn(low=-np.pi/2, high=-np.pi/2, number_of_positions=1, duration_of_each_position=1, timestep=.005)
-	q1 = np.append(q1,p2p_positions_gen_fcn(low=0, high=0, number_of_positions=1, duration_of_each_position=14, timestep=.005))
+	q1 = np.append(q1,p2p_positions_gen_fcn(low=0, high=0, number_of_positions=1, duration_of_each_position=6, timestep=.005))
 	desired_kinematics = positions_to_kinematics_fcn(q0, q1, timestep = 0.005)
-	exp4_average_error[0,:], _, _ = openloop_run_fcn(model=model, desired_kinematics=desired_kinematics, model_ver=3, plot_outputs=False, Mj_render=False)
+	exp4_average_error[0,:], _, _ = openloop_run_fcn(model=model, desired_kinematics=desired_kinematics, model_ver=3, plot_outputs=plot_outputs, Mj_render=Mj_render)
 
 	q0 = p2p_positions_gen_fcn(low=np.pi/3, high=np.pi/3, number_of_positions=1, duration_of_each_position=1, timestep=.005)
-	q0 = np.append(q0,p2p_positions_gen_fcn(low=0, high=0, number_of_positions=1, duration_of_each_position=4, timestep=.005))
+	q0 = np.append(q0,p2p_positions_gen_fcn(low=0, high=0, number_of_positions=1, duration_of_each_position=6, timestep=.005))
 	q1 = p2p_positions_gen_fcn(low=-np.pi/2, high=-np.pi/2, number_of_positions=1, duration_of_each_position=1, timestep=.005)
-	q1 = np.append(q1,p2p_positions_gen_fcn(low=0, high=0, number_of_positions=1, duration_of_each_position=4, timestep=.005))
+	q1 = np.append(q1,p2p_positions_gen_fcn(low=0, high=0, number_of_positions=1, duration_of_each_position=6, timestep=.005))
 	desired_kinematics = positions_to_kinematics_fcn(q0, q1, timestep = 0.005)
-	exp4_average_error[1,:], _, _ = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics,  P=P, I=I, model_ver=3, plot_outputs=False, Mj_render=False)
+	exp4_average_error[1,:], _, _ = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics,  P=P, I=I, model_ver=3, plot_outputs=plot_outputs, Mj_render=Mj_render)
 
 if experiments_switch[4] == 1: # walking; contact dynamics
 	np.random.seed(0)
@@ -285,8 +285,8 @@ if experiments_switch[10] ==1: # cyclical on air
 errors_all = [exp1_average_error, exp2_average_error, exp3_average_error, exp4_average_error, exp5_average_error, exp6_average_error, exp7_average_error, exp8_average_error, exp9_average_error, exp10_average_error, exp11_average_error]
 #pickle.dump([errors_all, trial_number],open("results/P_I/feedback_errors_P_I_V8_50.sav", 'wb')) # saving the results with only P
 [errors_all, trial_number] = pickle.load(open("results/P_I/feedback_errors_P_I_V8_50.sav", 'rb')) # loading the results with only P
-# experiments_switch = np.zeros(11,)
-# experiments_switch[7] =1
-plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number)
+experiments_switch = np.zeros(11,)
+#experiments_switch[3] =1
+#plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number)
 
 #import pdb; pdb.set_trace()

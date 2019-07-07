@@ -34,7 +34,7 @@
 
         <light directional="true" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 1 -5"/>
         <body name="Chassis" pos="0 0 -0.2">
-            <camera name="Chassis_camera" pos="0 -6 3"  zaxis="0 -2 1"/>
+            <camera name="Chassis_camera" pos="0 -3 2"  zaxis="0 -2 1"/>
             <geom name="Chassis_frame" type="box" pos="0 0 1.7" zaxis="0 1 0" size=".50 .30 .25" rgba=".25 .25 .25 0.25" mass=".1"/>
             <joint armature="0" axis="1 0 0" damping="0" frictionloss="10" limited="false" name="rootx" pos="0 0 0" stiffness="0" type="slide"/>
             <joint armature="0" axis="0 0 1" damping="0" frictionloss="5" limited="false" name="rootz" pos="0 0 0" stiffness="0" springdamper=".01 10" type="slide"/> <!-- to enable z axis slide with a spring damper-->

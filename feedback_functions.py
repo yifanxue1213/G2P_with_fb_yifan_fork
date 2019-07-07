@@ -50,8 +50,8 @@ def closeloop_run_fcn(model, desired_kinematics, P, I, delay_timesteps=0, model_
 
 	if Mj_render:
 		viewer = MjViewer(sim)
-		# viewer.cam.fixedcamid += 1
-		# viewer.cam.type = const.CAMERA_FIXED
+		viewer.cam.fixedcamid += 1
+		viewer.cam.type = const.CAMERA_FIXED
 	sim_state = sim.get_state()
 	control_vector_length=sim.data.ctrl.__len__()
 	print("control_vector_length: "+str(control_vector_length))
@@ -94,10 +94,10 @@ def closeloop_run_fcn(model, desired_kinematics, P, I, delay_timesteps=0, model_
 		alpha=.8
 		plot_t = np.linspace(timestep, desired_kinematics.shape[0]*timestep, desired_kinematics.shape[0])
 		plt.subplot(2, 1, 1)
-		plt.plot(plot_t, desired_kinematics[:,0], 'C2', plot_t, real_attempt_kinematics[:,0], 'C1', alpha=alpha)
+		plt.plot(plot_t, desired_kinematics[:,0], 'k', plot_t, real_attempt_kinematics[:,0], 'C1', alpha=.9)
 		plt.ylabel("$q_1$ (rads)")
 		plt.subplot(2, 1, 2)
-		plt.plot(plot_t, desired_kinematics[:,3], 'C2', plot_t, real_attempt_kinematics[:,3], 'C1', alpha=alpha)
+		plt.plot(plot_t, desired_kinematics[:,3], 'k', plot_t, real_attempt_kinematics[:,3], 'C1', alpha=.9)
 		plt.ylabel("$q_2$  (rads)")
 		plt.xlabel("time (s)")
 		plt.show(block=True)
@@ -111,15 +111,15 @@ def openloop_run_fcn(model, desired_kinematics, model_ver=0, plot_outputs=False,
 	average_error = 0.5*(error0+error1)
 	if plot_outputs:
 		plt.figure(figsize=(10, 6))
-		plt.rcParams.update({'font.size': 12})
+		plt.rcParams.update({'font.size': 18})
 		alpha=.8
 		plot_t = np.linspace(timestep, desired_kinematics.shape[0]*timestep, desired_kinematics.shape[0])
 		plt.subplot(2, 1, 1)
-		plt.plot(plot_t, desired_kinematics[:,0], 'C2', plot_t, real_attempt_kinematics[:,0], 'C0', alpha=alpha)
+		plt.plot(plot_t, desired_kinematics[:,0], 'tab:gray', plot_t, real_attempt_kinematics[:,0], 'C0', alpha=.9)
 		plt.ylabel("$q_1$ (rads)")
 		plt.ylim([-1.2, 1.2])
 		plt.subplot(2, 1, 2)
-		plt.plot(plot_t, desired_kinematics[:,3], 'C2', plot_t, real_attempt_kinematics[:,3], 'C0', alpha=alpha)
+		plt.plot(plot_t, desired_kinematics[:,3], 'tab:gray', plot_t, real_attempt_kinematics[:,3], 'C0', alpha=.9)
 		plt.ylabel("$q_2$  (rads)")
 		plt.xlabel("time (s)")
 		plt.ylim([-1.7, .2])
@@ -136,12 +136,12 @@ def p2p_positions_gen_fcn(low, high, number_of_positions, duration_of_each_posit
 	return random_array
 
 def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
-	plt.rcParams.update({'font.size': 12})
+	plt.rcParams.update({'font.size': 18})
 	# plt 1: vs cycle period
 	if experiments_switch[0]:
 		plt.figure(figsize=(10, 6))
 		plt.plot(np.linspace(.5,10,trial_number), errors_all[0][0,:], np.linspace(.5,10,trial_number), errors_all[0][1,:], marker='.')
-		plt.ylim(0,.6)
+		plt.ylim(0,.65)
 		ax = plt.gca()
 		xmin, xmax = ax.get_xbound()
 		mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[0][0,:].mean(),errors_all[0][0,:].mean()],color='C0', linestyle='--', alpha=.7)
@@ -160,7 +160,7 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 	if experiments_switch[1]:
 		plt.figure(figsize=(10, 6))
 		plt.plot(range(errors_all[1][0,:].shape[0]), errors_all[1][0,:], range(errors_all[1][0,:].shape[0]), errors_all[1][1,:], marker='.')
-		plt.ylim(0,.75)
+		plt.ylim(0,.65)
 		ax = plt.gca()
 		xmin, xmax = ax.get_xbound()
 		mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[1][0,:].mean(),errors_all[1][0,:].mean()],color='C0', linestyle='--', alpha=.7)
@@ -179,7 +179,7 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 	if experiments_switch[2]:
 		plt.figure(figsize=(10, 6))
 		plt.plot(range(errors_all[2][0,:].shape[0]), errors_all[2][0,:], range(errors_all[2][0,:].shape[0]), errors_all[2][1,:], marker='.')
-		plt.ylim(0,.75)
+		plt.ylim(0,.65)
 		ax = plt.gca()
 		xmin, xmax = ax.get_xbound()
 		mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[2][0,:].mean(),errors_all[2][0,:].mean()],color='C0', linestyle='--', alpha=.7)
@@ -190,20 +190,30 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 		plt.legend(["open-loop",'close-loop'])
 		plt.xlabel("trial #")
 		plt.ylabel("error (rads)")
+		plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
 		plt.savefig('./results/P_I/exp3.png')
 		plt.show()
 	
 	# plt 4: compare all
 	if experiments_switch[3]:
 		plt.figure(figsize=(10, 6))
-		plt.bar(range(5), [errors_all[1][0,:].mean(axis=0), errors_all[2][0,:].mean(axis=0), errors_all[0][0,:].mean(axis=0), 
-				errors_all[4][0,:].mean(axis=0), errors_all[9].mean(axis=2)[0,:].mean()])
-		plt.bar(range(5), [errors_all[1][1,:].mean(axis=0), errors_all[2][1,:].mean(axis=0), errors_all[0][1,:].mean(axis=0),
-				errors_all[4][1,:].mean(axis=0), errors_all[9].mean(axis=2)[1,:].mean()])
-		plt.ylim(0,.85)
+		t_plot = np.linspace(1,5,5)
+		plt.bar(t_plot-.05,
+			[errors_all[1][0,:].mean(axis=0), errors_all[2][0,:].mean(axis=0), errors_all[0][0,:].mean(axis=0), 
+				errors_all[4][0,:].mean(axis=0), errors_all[9].mean(axis=2)[0,:].mean()],
+				yerr = [errors_all[1][0,:].std(axis=0), errors_all[2][0,:].std(axis=0), errors_all[0][0,:].std(axis=0), 
+				errors_all[4][0,:].std(axis=0), errors_all[9].mean(axis=2)[0,:].std()],
+				alpha = .9)
+		plt.bar(t_plot+.05,
+			[errors_all[1][1,:].mean(axis=0), errors_all[2][1,:].mean(axis=0), errors_all[0][1,:].mean(axis=0),
+				errors_all[4][1,:].mean(axis=0), errors_all[9].mean(axis=2)[1,:].mean()],
+				yerr = [errors_all[1][1,:].std(axis=0), errors_all[2][1,:].std(axis=0), errors_all[0][1,:].std(axis=0),
+				errors_all[4][1,:].std(axis=0), errors_all[9].mean(axis=2)[1,:].std()],
+				alpha = .9)
+		plt.ylim(0,.65)
 		plt.legend(["open-loop",'close-loop'])
 		plt.ylabel("mean error (rads)")
-		plt.xticks(range(6),('cyclical','point-to-point', 'cycle period', 'with contact', 'refinements\n(w/ shorter babbling)'), rotation=7)
+		plt.xticks(np.linspace(1,5,5), ('cyclical','point-to-point', 'cycle period', 'with contact', 'refinements\n(w/ shorter babbling)'), rotation=7)
 		plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
 		plt.savefig('./results/P_I/mean_errors.png')
 		plt.show()
@@ -216,7 +226,7 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 	if experiments_switch[4]:
 		plt.figure(figsize=(10, 6))
 		plt.plot(range(errors_all[4][0,:].shape[0]), errors_all[4][0,:], range(errors_all[4][0,:].shape[0]), errors_all[4][1,:], marker='.')
-		plt.ylim(0,1)
+		plt.ylim(0,.65)
 		ax = plt.gca()
 		xmin, xmax = ax.get_xbound()
 		mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[4][0,:].mean(),errors_all[4][0,:].mean()],color='C0', linestyle='--', alpha=.7)
@@ -235,7 +245,7 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 	if experiments_switch[5]:
 		plt.figure(figsize=(10, 6))
 		plt.plot(range(errors_all[5][0,:].shape[0]), errors_all[5][0,:], range(errors_all[5][0,:].shape[0]), errors_all[5][1,:],  range(errors_all[5][0,:].shape[0]), errors_all[5][2,:], marker='.')
-		plt.ylim(0,.25)
+		plt.ylim(0,.65)
 		ax = plt.gca()
 		xmin, xmax = ax.get_xbound()
 		mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[5][0,:].mean(),errors_all[5][0,:].mean()],color='C0', linestyle='--', alpha=.7)
@@ -255,19 +265,19 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 	#plt 7: ever learn random
 	if experiments_switch[6]:
 		plt.figure(figsize=(10, 6))
-		plt.plot(range(errors_all[6][0,:].shape[0]), errors_all[6][0,:], range(errors_all[6][0,:].shape[0]), errors_all[6][1,:], range(errors_all[6][0,:].shape[0]), errors_all[6][2,:], marker='.')
-		plt.ylim(0,.6)
+		plt.plot(range(errors_all[6][0,:].shape[0]), errors_all[6][0,:], range(errors_all[6][0,:].shape[0]), errors_all[6][1,:], marker='.')
+		plt.ylim(0,.65)
 		ax = plt.gca()
 		xmin, xmax = ax.get_xbound()
 		mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[6][0,:].mean(),errors_all[6][0,:].mean()],color='C0', linestyle='--', alpha=.7)
 		ax.add_line(mean_error_wo)
 		mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[6][1,:].mean(),errors_all[6][1,:].mean()],color='C1', linestyle='--', alpha=.7)
 		ax.add_line(mean_error_wf)
-		mean_error_wf_t = mlines.Line2D([xmin,xmax], [errors_all[6][2,:].mean(),errors_all[6][2,:].mean()],color='C2', linestyle='--', alpha=.7)
-		ax.add_line(mean_error_wf_t)
-		plt.title("Error values as a function of refinements (different desired movements)")
-		plt.legend(['without feedback','with feedback', 'with feedback alt'])
-		plt.xlabel("trial #")
+		# mean_error_wf_t = mlines.Line2D([xmin,xmax], [errors_all[6][2,:].mean(),errors_all[6][2,:].mean()],color='C2', linestyle='--', alpha=.7)
+		# ax.add_line(mean_error_wf_t)
+		#plt.title("Error values as a function of refinements (different desired movements)")
+		plt.legend(['open-loop','close-loop'])
+		plt.xlabel("refinement #")
 		plt.ylabel("error (rads)")
 		plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
 		plt.savefig('./results/P_I/exp7.png')
@@ -275,6 +285,7 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 
 	#plt 8: delay
 	if experiments_switch[7]:
+		plt.rcParams.update({'font.size': 14})
 		fig = plt.figure(figsize=(10, 6))
 		ax = fig.add_subplot(111, projection='3d')
 
@@ -299,6 +310,7 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 		#plt.title('Error for a set of cyclical trials as a function of delay')
 		plt.savefig('./results/P_I/exp8.png')
 		plt.show()
+		plt.rcParams.update({'font.size': 18})
 
 	#plt 9: babbling mesh
 	if experiments_switch[8]:
@@ -317,7 +329,7 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 		ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color = 'C1', alpha=.5)
 		Z = exp9_average_error[2,:,:]
 		ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color='C2', alpha=.5)
-		ax.set_zlim(0,.25)
+		ax.set_zlim(0,.65)
 		ax.view_init(elev=34., azim=-47.)
 		ax.set_xlabel('refinement #')
 		ax.set_ylabel('babbling duration (minutes)')
@@ -345,7 +357,7 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 		ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color='C2', alpha=.5)
 		Z = exp10_average_error[3,:,:]
 		ax.plot_wireframe(X, Y, Z, rstride=100, cstride=1, color='C3', alpha=.5)
-		ax.set_zlim(0,.8)
+		ax.set_zlim(0,.65)
 		ax.view_init(elev=34., azim=-47.)
 		ax.set_xlabel('refinement #')
 		ax.set_ylabel('tasks')
@@ -375,13 +387,14 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 		plt.figure(figsize=(10, 6))
 		plt.bar(powers-.05, exp11_average_error[0,:], alpha=.9)
 		plt.bar(powers+.05, exp11_average_error[1,:], alpha=.9)
-		plt.ylim(0,.75)
+		plt.ylim(0,.5)
 		plt.legend(["open-loop",'close-loop'])
 		plt.ylabel("mean error (rads)")
 		#plt.xticks(range(6),('cyclical','point-to-point', 'cycle period', 'with contact', 'refinements\n(w/ shorter babbling)'), rotation=7)
 		#plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
 		plt.savefig('./results/P_I/exp11.png')
 		plt.xlabel('$N\:_{(in\:  2^{N} *[P, I])}$')
+		plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
 		plt.savefig('./results/P_I/exp11.png')
 		plt.show()
 

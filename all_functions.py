@@ -462,8 +462,8 @@ def run_activations_fcn(est_activations, model_ver=0, timestep=0.005, Mj_render=
 	sim = MjSim(model)
 	if Mj_render:
 		viewer = MjViewer(sim)
-		# viewer.cam.fixedcamid += 1
-		# viewer.cam.type = const.CAMERA_FIXED
+		viewer.cam.fixedcamid += 1
+		viewer.cam.type = const.CAMERA_FIXED
 	sim_state = sim.get_state()
 	control_vector_length=sim.data.ctrl.__len__()
 	print("control_vector_length: "+str(control_vector_length))
