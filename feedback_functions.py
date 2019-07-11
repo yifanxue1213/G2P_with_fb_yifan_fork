@@ -1,7 +1,7 @@
 from mujoco_py import load_model_from_path, MjSim, MjViewer
 import numpy as np
 from numpy import matlib
-from scipy import signal
+from scipy import signal, stats
 from sklearn.neural_network import MLPRegressor
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import axes3d
@@ -341,6 +341,7 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 	if experiments_switch[9]:
 		exp10_average_error=errors_all[9]
 
+		# plotting stacked data
 		fig = plt.figure(figsize=(10, 6))
 		ax = fig.add_subplot(111, projection='3d')
 		trials_num = exp10_average_error.shape[1]
@@ -365,6 +366,7 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 		plt.savefig('./results/P_I/exp10_S.png')
 		plt.show()
 
+		# plotting plots of means (+&- SD)
 		fig = plt.figure(figsize=(10, 6))
 		ax = fig.add_subplot(111)
 		means = exp10_average_error.mean(axis=2)
@@ -379,6 +381,19 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 		plt.savefig('./results/P_I/exp10.png')
 		plt.show()
 
+		# p-value calculations and plotting boxplots
+		ctwc=errors_all[9][0][24]
+		ctwo=errors_all[9][2][24]
+		[Fc, pc] = stats.f_oneway(ctwc,ctwo)
+
+		otwo=errors_all[9][1][24]
+		otwc=errors_all[9][3][24]
+		[Fo, po] = stats.f_oneway(otwo,otwc)
+		print('for experiment 10, p-value for close-loop systems is: ', pc, ' and for the open-loop system is: ', po, '.')
+		plt.boxplot([errors_all[9][0][24], errors_all[9][2][24], errors_all[9][1][24], errors_all[9][3][24]])
+		plt.xticks(np.linspace(1,4,4), ('ol tw/ ol','ol tw/ cl', 'cl tw/ cl', 'cl tw/ ol'), rotation=7)
+		plt.savefig('./results/P_I/exp10_boxplots.png')
+		plt.show()
 
 	# exp 11 PI sensitivity
 	if experiments_switch[10]:
