@@ -140,7 +140,8 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 	# plt 1: vs cycle period
 	if experiments_switch[0]:
 		plt.figure(figsize=(10, 6))
-		plt.plot(np.linspace(.5,10,trial_number), errors_all[0][0,:], np.linspace(.5,10,trial_number), errors_all[0][1,:], marker='.')
+		plt.plot(np.linspace(.5,10,trial_number), errors_all[0][0,:], color='C0', marker='.')
+		plt.plot(np.linspace(.5,10,trial_number), errors_all[0][1,:], color='C1', marker='.')
 		plt.ylim(0,.65)
 		ax = plt.gca()
 		xmin, xmax = ax.get_xbound()
@@ -154,6 +155,37 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 		plt.ylabel("error (rads)")
 		plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
 		plt.savefig('./results/P_I/exp1.png')
+		plt.show()
+
+
+		## with phys
+		phys_ol_avg_error = np.array([22.6366, 13.8909, 18.2556, 23.2015, 23.1718, 21.5603, 21.6143, 22.1547, 18.6581, 18.2983])*np.pi/180
+		phys_cl_avg_error = np.array([17.1090, 11.9084, 10.3141, 10.1112, 9.7079, 9.2170, 9.2056, 9.5024, 9.3722, 9.7379])*np.pi/180
+
+		plt.figure(figsize=(10, 6))
+		plt.plot(np.linspace(.5,10,trial_number), errors_all[0][0,:], color='cornflowerblue', marker='.', alpha=.6)
+		plt.plot(np.linspace(.5,10,trial_number), errors_all[0][1,:], color='orange', marker='.', alpha=.4)
+		plt.plot(np.linspace(1,10,10), phys_ol_avg_error, color='royalblue', marker='.', alpha=.95)
+		plt.plot( np.linspace(1,10,10), phys_cl_avg_error, color='darkorange', marker='.', alpha=.9)
+		plt.ylim(0,.65)
+
+		ax = plt.gca()
+		xmin, xmax = ax.get_xbound()
+		mean_error_wo = mlines.Line2D([xmin,xmax], [errors_all[0][0,:].mean(),errors_all[0][0,:].mean()],color='cornflowerblue', linestyle='--', alpha=.6)
+		ax.add_line(mean_error_wo)
+		mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[0][1,:].mean(),errors_all[0][1,:].mean()],color='orange', linestyle='--', alpha=.4)
+		ax.add_line(mean_error_wf)
+
+		mean_error_phys_wo = mlines.Line2D([xmin,xmax], [phys_ol_avg_error.mean(),phys_ol_avg_error.mean()],color='royalblue', linestyle='--', alpha=.95)
+		ax.add_line(mean_error_phys_wo)
+		mean_error_phys_wf = mlines.Line2D([xmin,xmax], [phys_cl_avg_error.mean(),phys_cl_avg_error.mean()],color='darkorange', linestyle='--', alpha=.9)
+		ax.add_line(mean_error_phys_wf)
+		#plt.title("Error as a function of cycle period")
+		plt.legend(["open-loop (sim)",'close-loop (sim)','open-loop (phys)','close-loop (phys)'], fontsize='small')
+		plt.xlabel("cycle period (s)")
+		plt.ylabel("error (rads)")
+		plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
+		plt.savefig('./results/P_I/exp1_plus.pdf')
 		plt.show()
 
 	#plt 2: 50 cyclical
@@ -216,6 +248,45 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 		plt.xticks(np.linspace(1,5,5), ('cyclical','point-to-point', 'cycle period', 'with contact', 'refinements\n(w/ shorter babbling)'), rotation=7)
 		plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
 		plt.savefig('./results/P_I/mean_errors.png')
+		plt.show()
+		# errors_all = [exp2_average_error]
+		# plt.figure()
+		# plt.plot(range(errors_all[0][0,:].shape[0]), errors_all[0][0,:], range(errors_all[0][0,:].shape[0]), errors_all[0][1,:])
+		# plt.show(block=True)
+
+	# plt 4+: compare all + real system
+		plt.figure(figsize=(10, 6))
+		real_system_means_ol = np.array([20.3442,   21.1520,   21.2445])*np.pi/180
+		real_system_stds_ol = np.array([2.9967,    3.4403,    4.4391])*np.pi/180
+		real_system_means_cl = np.array([10.6186,   10.5820,   11.5223])*np.pi/180
+		real_system_stds_cl = np.array([2.4154,   1.4071,    2.9966])*np.pi/180
+		t_plot = np.linspace(1,8,8)
+		plt.bar(t_plot-.05,
+			[errors_all[1][0,:].mean(axis=0), errors_all[2][0,:].mean(axis=0), errors_all[0][0,:].mean(axis=0),
+			 real_system_means_ol[0], real_system_means_ol[1], real_system_means_ol[2],
+				errors_all[4][0,:].mean(axis=0), errors_all[9].mean(axis=2)[0,:].mean()],
+				yerr = [errors_all[1][0,:].std(axis=0), errors_all[2][0,:].std(axis=0), errors_all[0][0,:].std(axis=0),
+				real_system_stds_ol[0], real_system_stds_ol[1], real_system_stds_ol[2],
+				errors_all[4][0,:].std(axis=0), errors_all[9].mean(axis=2)[0,:].std()],
+				alpha = .9)
+		plt.bar(t_plot+.05,
+			[errors_all[1][1,:].mean(axis=0), errors_all[2][1,:].mean(axis=0), errors_all[0][1,:].mean(axis=0),
+			real_system_means_cl[0], real_system_means_cl[1], real_system_means_cl[2],
+				errors_all[4][1,:].mean(axis=0), errors_all[9].mean(axis=2)[1,:].mean()],
+				yerr = [errors_all[1][1,:].std(axis=0), errors_all[2][1,:].std(axis=0), errors_all[0][1,:].std(axis=0),
+				real_system_stds_cl[0],	real_system_stds_cl[1], real_system_stds_cl[2],
+				errors_all[4][1,:].std(axis=0), errors_all[9].mean(axis=2)[1,:].std()],
+				alpha = .9)
+		plt.ylim(0,.65)
+		plt.legend(["open-loop",'close-loop'])
+		plt.ylabel("mean error (rads)")
+		plt.xticks(t_plot, ('cyclical\n(sim)','point-to-point\n(sim)', 'cycle period\n(sim)',
+			'cyclical\n(phys)','point-to-point\n(phys)', 'cycle period\n(phys)',
+			'with contact', 'refinements\n(w/ shorter babbling)'),
+		fontsize=14, rotation=15)
+		plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
+		plt.subplots_adjust(left = .09, bottom = .17, right = .95, top= .97)
+		plt.savefig('./results/P_I/mean_errors_plus.pdf')
 		plt.show()
 		# errors_all = [exp2_average_error]
 		# plt.figure()

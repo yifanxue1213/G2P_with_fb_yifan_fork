@@ -286,8 +286,8 @@ if experiments_switch[10] ==1: # cyclical on air
 errors_all = [exp1_average_error, exp2_average_error, exp3_average_error, exp4_average_error, exp5_average_error, exp6_average_error, exp7_average_error, exp8_average_error, exp9_average_error, exp10_average_error, exp11_average_error]
 #pickle.dump([errors_all, trial_number],open("results/P_I/feedback_errors_P_I_tmp.sav", 'wb')) # saving the results with only P
 [errors_all, trial_number] = pickle.load(open("results/P_I/feedback_errors_P_I_V8_50.sav", 'rb')) # loading the results with only P
-experiments_switch = np.ones(11,)
-#experiments_switch[3] =1
+experiments_switch = np.zeros(11,)
+experiments_switch[0] =1
 plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number)
 
 #import pdb; pdb.set_trace()
