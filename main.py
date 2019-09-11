@@ -27,9 +27,9 @@ I = np.array([2, 6])
 np.random.seed(0)
 experiments_switch = np.zeros(11,) # sets which experiments should run
 #np.zeros(10,)#[0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
-#experiments_switch[0]=1 
-trial_number = 50
-plot_outputs = False
+#experiments_switch[4]=1 
+trial_number = 1
+plot_outputs = True
 Mj_render = False
 for ii in range(len(experiments_switch)):
 	globals()["exp{}_average_error".format(ii+1)]=np.zeros([2,1])
@@ -107,9 +107,13 @@ if experiments_switch[4] == 1: # walking; contact dynamics
 		q0_filtered_10 = np.tile(q0_filtered,10)
 		q1_filtered_10 = np.tile(q1_filtered,10)
 		desired_kinematics = positions_to_kinematics_fcn(q0_filtered_10, q1_filtered_10, timestep = 0.005)
-		exp5_average_error[0,ii], _, _ = openloop_run_fcn(model=model, desired_kinematics=desired_kinematics, model_ver=2, plot_outputs=plot_outputs, Mj_render=Mj_render)
-		exp5_average_error[1,ii], _, _ = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics, model_ver=2, P=P, I=I, plot_outputs=plot_outputs, Mj_render=Mj_render) # K = [10, 15]
-
+		exp5_average_error[0,ii], real_attempt_kinematics_ol, _ = openloop_run_fcn(model=model, desired_kinematics=desired_kinematics, model_ver=2, plot_outputs=plot_outputs, Mj_render=Mj_render)
+		exp5_average_error[1,ii], real_attempt_kinematics_cl, _ = closeloop_run_fcn(model=model, desired_kinematics=desired_kinematics, model_ver=2, P=P, I=I, plot_outputs=plot_outputs, Mj_render=Mj_render) # K = [10, 15]
+		#import pdb; pdb.set_trace()
+		# np.savetxt('./results/withdynamics_desired.csv', desired_kinematics, delimiter=',')
+		# np.savetxt('./results/withdynamics_ol.csv', real_attempt_kinematics_ol, delimiter=',')
+		# np.savetxt('./results/withdynamics_cl.csv', real_attempt_kinematics_cl, delimiter=',')
+	
 if experiments_switch[5] == 1: # everlearn ones
 	np.random.seed(0)
 	[babbling_kinematics_1min, babbling_activations_1min] = babbling_fcn(simulation_minutes=1)
@@ -288,6 +292,9 @@ errors_all = [exp1_average_error, exp2_average_error, exp3_average_error, exp4_a
 [errors_all, trial_number] = pickle.load(open("results/P_I/feedback_errors_P_I_V8_50.sav", 'rb')) # loading the results with only P
 experiments_switch = np.zeros(11,)
 experiments_switch[0] =1
+experiments_switch[3] =1
+experiments_switch[7] =1
+experiments_switch[9] =1
 plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number)
 
 #import pdb; pdb.set_trace()

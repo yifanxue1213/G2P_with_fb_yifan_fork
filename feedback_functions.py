@@ -136,6 +136,10 @@ def p2p_positions_gen_fcn(low, high, number_of_positions, duration_of_each_posit
 	return random_array
 
 def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
+	import matplotlib
+	matplotlib.rcParams['pdf.fonttype'] = 42
+	matplotlib.rcParams['ps.fonttype'] = 42
+
 	plt.rcParams.update({'font.size': 18})
 	# plt 1: vs cycle period
 	if experiments_switch[0]:
@@ -162,11 +166,11 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 		phys_ol_avg_error = np.array([22.6366, 13.8909, 18.2556, 23.2015, 23.1718, 21.5603, 21.6143, 22.1547, 18.6581, 18.2983])*np.pi/180
 		phys_cl_avg_error = np.array([17.1090, 11.9084, 10.3141, 10.1112, 9.7079, 9.2170, 9.2056, 9.5024, 9.3722, 9.7379])*np.pi/180
 
-		plt.figure(figsize=(10, 6))
-		plt.plot(np.linspace(.5,10,trial_number), errors_all[0][0,:], color='cornflowerblue', marker='.', alpha=.6)
-		plt.plot(np.linspace(.5,10,trial_number), errors_all[0][1,:], color='orange', marker='.', alpha=.4)
-		plt.plot(np.linspace(1,10,10), phys_ol_avg_error, color='royalblue', marker='.', alpha=.95)
-		plt.plot( np.linspace(1,10,10), phys_cl_avg_error, color='darkorange', marker='.', alpha=.9)
+		plt.figure(figsize=(10, 5))
+		plt.plot(np.linspace(.5,10,trial_number), errors_all[0][0,:], linewidth=3.0, color='cornflowerblue', marker='.', alpha=.6)
+		plt.plot(np.linspace(.5,10,trial_number), errors_all[0][1,:], linewidth=3.0, color='orange', marker='.', alpha=.4)
+		plt.plot(np.linspace(1,10,10), phys_ol_avg_error, linewidth=3.0, color='royalblue', marker='.', alpha=.8)
+		plt.plot( np.linspace(1,10,10), phys_cl_avg_error, linewidth=3.0, color='darkorange', marker='.', alpha=.8)
 		plt.ylim(0,.65)
 
 		ax = plt.gca()
@@ -176,15 +180,18 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 		mean_error_wf = mlines.Line2D([xmin,xmax], [errors_all[0][1,:].mean(),errors_all[0][1,:].mean()],color='orange', linestyle='--', alpha=.4)
 		ax.add_line(mean_error_wf)
 
-		mean_error_phys_wo = mlines.Line2D([xmin,xmax], [phys_ol_avg_error.mean(),phys_ol_avg_error.mean()],color='royalblue', linestyle='--', alpha=.95)
+		mean_error_phys_wo = mlines.Line2D([xmin,xmax], [phys_ol_avg_error.mean(),phys_ol_avg_error.mean()],color='royalblue', linestyle='--', alpha=.8)
 		ax.add_line(mean_error_phys_wo)
-		mean_error_phys_wf = mlines.Line2D([xmin,xmax], [phys_cl_avg_error.mean(),phys_cl_avg_error.mean()],color='darkorange', linestyle='--', alpha=.9)
+		mean_error_phys_wf = mlines.Line2D([xmin,xmax], [phys_cl_avg_error.mean(),phys_cl_avg_error.mean()],color='darkorange', linestyle='--', alpha=.8)
 		ax.add_line(mean_error_phys_wf)
 		#plt.title("Error as a function of cycle period")
 		plt.legend(["open-loop (sim)",'close-loop (sim)','open-loop (phys)','close-loop (phys)'], fontsize='small')
+		plt.subplots_adjust(bottom = .13, top= .95)
 		plt.xlabel("cycle period (s)")
 		plt.ylabel("error (rads)")
 		plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
+		#plt.rc('text', usetex=True)
+		#plt.rc('font', family='serif')
 		plt.savefig('./results/P_I/exp1_plus.pdf')
 		plt.show()
 
@@ -255,7 +262,7 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 		# plt.show(block=True)
 
 	# plt 4+: compare all + real system
-		plt.figure(figsize=(10, 6))
+		plt.figure(figsize=(10, 5))
 		real_system_means_ol = np.array([20.3442,   21.1520,   21.2445])*np.pi/180
 		real_system_stds_ol = np.array([2.9967,    3.4403,    4.4391])*np.pi/180
 		real_system_means_cl = np.array([10.6186,   10.5820,   11.5223])*np.pi/180
@@ -285,7 +292,8 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 			'with contact', 'refinements\n(w/ shorter babbling)'),
 		fontsize=14, rotation=15)
 		plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
-		plt.subplots_adjust(left = .09, bottom = .17, right = .95, top= .97)
+		plt.subplots_adjust(left = .09, bottom = .2, right = .95, top= .97)
+		plt.rc('font', family='serif')
 		plt.savefig('./results/P_I/mean_errors_plus.pdf')
 		plt.show()
 		# errors_all = [exp2_average_error]
@@ -295,6 +303,8 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 
 	#plt 5: with contact
 	if experiments_switch[4]:
+		#np.savetxt('errors_all_4_0.csv', [errors_all[4][0,:]], delimiter=',')
+		#np.savetxt('errors_all_4_1.csv', [errors_all[4][1,:]], delimiter=',')
 		plt.figure(figsize=(10, 6))
 		plt.plot(range(errors_all[4][0,:].shape[0]), errors_all[4][0,:], range(errors_all[4][0,:].shape[0]), errors_all[4][1,:], marker='.')
 		plt.ylim(0,.65)
@@ -374,12 +384,13 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 		Z_ol_1 = exp8_average_error[0,:]
 		Z_ol = np.tile(Z_ol_1,[11,1])
 		ax.plot_wireframe(X, Y, Z_ol, rstride=5, cstride=10, color="lightcoral", alpha=.7)
-		ax.view_init(elev=21., azim=-114.)
+		ax.view_init(elev=33., azim=-124.)
 		ax.set_xlabel('delays (ms)')
 		ax.set_ylabel('trial #')
 		ax.set_zlabel('mean error (rads)')
+		plt.subplots_adjust(top=1, bottom=0, right=1, left=0)
 		#plt.title('Error for a set of cyclical trials as a function of delay')
-		plt.savefig('./results/P_I/exp8.png')
+		plt.savefig('./results/P_I/exp8.pdf')
 		plt.show()
 		plt.rcParams.update({'font.size': 18})
 
@@ -438,7 +449,7 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 		plt.show()
 
 		# plotting plots of means (+&- SD)
-		fig = plt.figure(figsize=(10, 6))
+		fig = plt.figure(figsize=(10, 5))
 		ax = fig.add_subplot(111)
 		means = exp10_average_error.mean(axis=2)
 		ax.errorbar(np.linspace(.85,24.85,25),means[0,:],yerr=exp10_average_error[0].std(axis=1), alpha=.9, elinewidth=0.75, capsize=5, capthick=0.5)	# ol
@@ -448,8 +459,9 @@ def plot_comparison_figures_fcn(errors_all, experiments_switch, trial_number):
 		ax.set_xlabel('refinement #')
 		ax.set_ylabel('mean error (rads)')
 		plt.tick_params(axis='y', rotation=45)  # Set rotation for yticks
-		ax.legend(['open-loop','close-loop','ol w/ cl model','cl w/ ol model'])
-		plt.savefig('./results/P_I/exp10.png')
+		ax.legend(['open-loop','close-loop','ol w/ cl model','cl w/ ol model'],fontsize='x-small')
+		plt.subplots_adjust(bottom=.13)
+		plt.savefig('./results/P_I/exp10.pdf')
 		plt.show()
 
 		# p-value calculations and plotting boxplots
