@@ -222,7 +222,7 @@ def babbling_fcn(simulation_minutes=5):
 	pass_chance = timestep
 	motor1_act = \
 	systemID_input_gen_fcn(
-		signal_duration_in_seconds=simulation_time, pass_chance=pass_chance, max_in=max_in, min_in=min_in, timestep=timestep)
+		signal_duration_in_seconds=simulation_time, pass_chance=pass_chance, max_in=max_in, min_in=min_in, timestep=timestep) #DUM generating train of motor activations for a motor
 	motor2_act = \
 	systemID_input_gen_fcn(
 		signal_duration_in_seconds=simulation_time, pass_chance=pass_chance, max_in=max_in, min_in=min_in, timestep=timestep)
@@ -237,7 +237,7 @@ def babbling_fcn(simulation_minutes=5):
 	#kinematics_activations_show_fcn(activations=babbling_activations)
 	[babbling_kinematics, babbling_activations, chassis_pos] = \
 	run_activations_fcn(
-		babbling_activations, model_ver=0, timestep=0.005, Mj_render=False
+		babbling_activations, model_ver=0, timestep=0.005, Mj_render=False			#DUM herer is where we determine if we generate MUJOCO representations 
 		)
 
 	# for ii in range(run_samples):
@@ -338,7 +338,7 @@ def inverse_mapping_fcn(kinematics, activations, early_stopping=False, **kwargs)
 	return model
 	#import pdb; pdb.set_trace()
 
-def positions_to_kinematics_fcn(q0, q1, timestep = 0.005):
+def positions_to_kinematics_fcn(q0, q1, timestep = 0.005):				#DUM getting accelerations and velocities 
 	kinematics=np.transpose(
 	np.concatenate(
 		(
@@ -446,7 +446,7 @@ def estimate_activations_fcn(model, desired_kinematics):
 	# plt.show(block=False)
 	return est_activations
 
-def run_activations_fcn(est_activations, model_ver=0, timestep=0.005, Mj_render=False):
+def run_activations_fcn(est_activations, model_ver=0, timestep=0.005, Mj_render=False):		#DUM: what is model_ver?
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! the q0 is now the chasis pos. needs to be fixed
 	"""
 	this function runs the predicted activations generatred from running
@@ -458,25 +458,25 @@ def run_activations_fcn(est_activations, model_ver=0, timestep=0.005, Mj_render=
 	#task_kinematics=np.load("task_kinematics.npy")
 	#est_task_activations=np.load("est_task_activations.npy")
 
-	model = load_model_from_path("./models/nmi_leg_w_chassis_v{}.xml".format(model_ver))
+	model = load_model_from_path("./models/nmi_leg_w_chassis_v{}.xml".format(model_ver))		#
 	sim = MjSim(model)
-	if Mj_render:
+	if Mj_render:																				#DUM: How and what are we seeing in the MuJoCo render? SEtting up MuJoCo visualization
 		viewer = MjViewer(sim)
 		viewer.cam.fixedcamid += 1
 		viewer.cam.type = const.CAMERA_FIXED
-	sim_state = sim.get_state()
-	control_vector_length=sim.data.ctrl.__len__()
-	print("control_vector_length: "+str(control_vector_length))
-	number_of_task_samples=est_activations.shape[0]
+	sim_state = sim.get_state()																	#DUM: getting information from the model
+	control_vector_length=sim.data.ctrl.__len__()												#DUM giving the number of control components									
+	print("control_vector_length: "+str(control_vector_length))		
+	number_of_task_samples=est_activations.shape[0]												#DUM shape 0 is the size of the dimension 0 of the numpy array (rows)						
 
-	real_attempt_positions = np.zeros((number_of_task_samples,2))
+	real_attempt_positions = np.zeros((number_of_task_samples,2))								#DUM array filled with zeros
 	real_attempt_activations = np.zeros((number_of_task_samples,3))
 	chassis_pos=np.zeros(number_of_task_samples,)
 	sim.set_state(sim_state)
-	for ii in range(number_of_task_samples):
-	    sim.data.ctrl[:] = est_activations[ii,:]
-	    sim.step()
-	    current_positions_array = sim.data.qpos[-2:]
+	for ii in range(number_of_task_samples):													#DUM Performing simulation and getting dAta from it
+	    sim.data.ctrl[:] = est_activations[ii,:]												#DUM giving inputs as control variables 
+	    sim.step()																				
+	    current_positions_array = sim.data.qpos[-2:]											#DUM getting  joint positions hip and knee
 
 	    # current_kinematics_array=np.array(
 	    # 	[sim.data.qpos[0],

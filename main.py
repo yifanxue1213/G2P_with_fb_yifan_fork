@@ -8,16 +8,16 @@ from feedback_functions import *
 
 simplefilter(action='ignore', category=FutureWarning)
 
-# np.random.seed(0)
-# [babbling_kinematics, babbling_activations] = babbling_fcn(simulation_minutes=5)
-# model = inverse_mapping_fcn(kinematics=babbling_kinematics, activations=babbling_activations)
-# cum_kinematics = babbling_kinematics
-# cum_activations = babbling_activations
+np.random.seed(0)
+[babbling_kinematics, babbling_activations] = babbling_fcn(simulation_minutes=5)
+model = inverse_mapping_fcn(kinematics=babbling_kinematics, activations=babbling_activations)
+cum_kinematics = babbling_kinematics														#DUM: What is CUM?
+cum_activations = babbling_activations	
 
 
 
-# pickle.dump([model,cum_kinematics, cum_activations],open("results/mlp_model.sav", 'wb'))
-[model,cum_kinematics, cum_activations] = pickle.load(open("results/mlp_model.sav", 'rb')) # loading the model
+#pickle.dump([model,cum_kinematics, cum_activations],open("results/mlp_model.sav", 'wb'))	#DUM 'wb' for writting
+#[model,cum_kinematics, cum_activations] = pickle.load(open("results/mlp_model.sav", 'rb')) # loading the model
 
 
 P = np.array([10, 15])
@@ -30,7 +30,7 @@ experiments_switch = np.zeros(11,) # sets which experiments should run
 #experiments_switch[4]=1 
 trial_number = 1
 plot_outputs = True
-Mj_render = False
+Mj_render = False #DUM modified 
 for ii in range(len(experiments_switch)):
 	globals()["exp{}_average_error".format(ii+1)]=np.zeros([2,1])
 	exp6_average_error = np.zeros([3,1])
