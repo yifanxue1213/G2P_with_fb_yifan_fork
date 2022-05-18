@@ -204,6 +204,7 @@ def babbling_fcn(simulation_minutes=5):
 	# viewer = MjViewer(sim)
 	sim_state = sim.get_state()
 
+	#Yifan: the number of control inputs needed
 	control_vector_length=sim.data.ctrl.__len__()
 	# print("control_vector_length: "+str(control_vector_length))
 	simulation_time=simulation_minutes*60.0
@@ -274,6 +275,7 @@ def babbling_fcn(simulation_minutes=5):
 		np.max(babbling_kinematics[:,0]),
 		np.min(babbling_kinematics[:,3]),
 		np.max(babbling_kinematics[:,3]))
+	#Yifan: discard the last 1000 data, don't know why
 	return babbling_kinematics[1000:,:], babbling_activations[1000:,:]
 	#np.save("babbling_kinematics",babbling_kinematics)
 	#np.save("babbling_activations",babbling_activations)
@@ -286,6 +288,7 @@ def systemID_input_gen_fcn(signal_duration_in_seconds, pass_chance, max_in, min_
 
 	for ii in range(1, number_of_samples):
 		pass_rand = np.random.uniform(0,1,1)
+		#Yifan: make it so that the random inputs would change the pose in rare scenarios, enabling the robot to hold poses
 		if pass_rand < pass_chance:
 			gen_input[ii] = ((max_in-min_in)*np.random.uniform(0,1,1)) + min_in
 		else:
@@ -338,7 +341,8 @@ def inverse_mapping_fcn(kinematics, activations, early_stopping=False, **kwargs)
 	return model
 	#import pdb; pdb.set_trace()
 
-def positions_to_kinematics_fcn(q0, q1, timestep = 0.005):				#DUM getting accelerations and velocities 
+def positions_to_kinematics_fcn(q0, q1, timestep = 0.005):				
+#DUM getting accelerations and velocities 
 	kinematics=np.transpose(
 	np.concatenate(
 		(
@@ -446,7 +450,8 @@ def estimate_activations_fcn(model, desired_kinematics):
 	# plt.show(block=False)
 	return est_activations
 
-def run_activations_fcn(est_activations, model_ver=0, timestep=0.005, Mj_render=False):		#DUM: what is model_ver?
+def run_activations_fcn(est_activations, model_ver=0, timestep=0.005, Mj_render=False):		
+#DUM: what is model_ver?   Yifan: model version, determine which model to load 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! the q0 is now the chasis pos. needs to be fixed
 	"""
 	this function runs the predicted activations generatred from running
@@ -460,23 +465,33 @@ def run_activations_fcn(est_activations, model_ver=0, timestep=0.005, Mj_render=
 
 	model = load_model_from_path("./models/nmi_leg_w_chassis_v{}.xml".format(model_ver))		#
 	sim = MjSim(model)
-	if Mj_render:																				#DUM: How and what are we seeing in the MuJoCo render? SEtting up MuJoCo visualization
+	if Mj_render:																				
+#DUM: How and what are we seeing in the MuJoCo render? SEtting up MuJoCo visualization
 		viewer = MjViewer(sim)
 		viewer.cam.fixedcamid += 1
 		viewer.cam.type = const.CAMERA_FIXED
-	sim_state = sim.get_state()																	#DUM: getting information from the model
-	control_vector_length=sim.data.ctrl.__len__()												#DUM giving the number of control components									
+	sim_state = sim.get_state()																	
+#DUM: getting information from the model
+	control_vector_length=sim.data.ctrl.__len__()												
+#DUM giving the number of control components									
 	print("control_vector_length: "+str(control_vector_length))		
-	number_of_task_samples=est_activations.shape[0]												#DUM shape 0 is the size of the dimension 0 of the numpy array (rows)						
+	number_of_task_samples=est_activations.shape[0]												#DUM shape 0 is the size of the dimension 0 of the numpy array (rows)
+#Yifan: 60000 for 5 min babbling						
 
-	real_attempt_positions = np.zeros((number_of_task_samples,2))								#DUM array filled with zeros
+	real_attempt_positions = np.zeros((number_of_task_samples,2))								
+#DUM array filled with zeros
+#2 joints, 3 actions/controls
 	real_attempt_activations = np.zeros((number_of_task_samples,3))
 	chassis_pos=np.zeros(number_of_task_samples,)
 	sim.set_state(sim_state)
-	for ii in range(number_of_task_samples):													#DUM Performing simulation and getting dAta from it
-	    sim.data.ctrl[:] = est_activations[ii,:]												#DUM giving inputs as control variables 
+	for ii in range(number_of_task_samples):													
+	#DUM Performing simulation and getting dAta from it
+	    sim.data.ctrl[:] = est_activations[ii,:]											
+	    #DUM giving inputs as control variables 
 	    sim.step()																				
-	    current_positions_array = sim.data.qpos[-2:]											#DUM getting  joint positions hip and knee
+	    current_positions_array = sim.data.qpos[-2:]											
+	    #DUM getting  joint positions hip and knee
+	    #Yifan: qpos.shape is 1x2
 
 	    # current_kinematics_array=np.array(
 	    # 	[sim.data.qpos[0],
@@ -486,6 +501,9 @@ def run_activations_fcn(est_activations, model_ver=0, timestep=0.005, Mj_render=
 	    # 	sim.data.qvel[1],
 	    # 	sim.data.qacc[1]]
 	    # 	)
+	    
+	    #Yifan:xpos returns 3D(x,y,z) cartesian coordinates
+	    #Yifan:qpos returns positions and orientations of the joints
 	    chassis_pos[ii]=sim.data.get_geom_xpos("Chassis_frame")[0]
 	    real_attempt_positions[ii,:] = current_positions_array
 	    real_attempt_activations[ii,:] = sim.data.ctrl

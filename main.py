@@ -11,7 +11,8 @@ simplefilter(action='ignore', category=FutureWarning)
 np.random.seed(0)
 [babbling_kinematics, babbling_activations] = babbling_fcn(simulation_minutes=5)
 model = inverse_mapping_fcn(kinematics=babbling_kinematics, activations=babbling_activations)
-cum_kinematics = babbling_kinematics														#DUM: What is CUM?
+cum_kinematics = babbling_kinematics														
+#DUM: What is CUM?
 cum_activations = babbling_activations	
 
 
@@ -26,11 +27,12 @@ I = np.array([2, 6])
 
 np.random.seed(0)
 experiments_switch = np.zeros(11,) # sets which experiments should run
-#np.zeros(10,)#[0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
-#experiments_switch[4]=1 
+experiments_switch[1]=1 
 trial_number = 1
-plot_outputs = True
-Mj_render = False #DUM modified 
+plot_outputs = False
+Mj_render = True #DUM modified 
+
+#Yifan: the shape of all exp is [2,1] except for 6,7,9,10
 for ii in range(len(experiments_switch)):
 	globals()["exp{}_average_error".format(ii+1)]=np.zeros([2,1])
 	exp6_average_error = np.zeros([3,1])
@@ -46,7 +48,7 @@ if experiments_switch[0] ==1: # as a function of cycle period
 	exp1_average_error = np.zeros([2,test1_no]) # first row open-loop and second row close-loop
 	#cycle length experiment
 	for cycle_duration_in_seconds, ii in zip(cycle_durations, range(test1_no)):
-		[q0_filtered, q1_filtered]  = feat_to_positions_fcn(features, timestep=0.005, cycle_duration_in_seconds = cycle_duration_in_seconds, show=False)
+		[q0_filtered, q1_filtered]  = feat_to_positions_fcn(features, timestep=0.005, cycle_duration_in_seconds = cycle_duration_in_seconds, show=True)
 		q0_filtered_10 = np.tile(q0_filtered,10)
 		q1_filtered_10 = np.tile(q1_filtered,10)
 		desired_kinematics = positions_to_kinematics_fcn(q0_filtered_10, q1_filtered_10, timestep = 0.005)
@@ -59,7 +61,7 @@ if experiments_switch[1] ==1: # cyclical on air
 	exp2_average_error = np.zeros([2,test2_no])
 	for ii in range(test2_no):
 		features = np.random.rand(10)
-		[q0_filtered, q1_filtered]  = feat_to_positions_fcn(features, timestep=0.005, cycle_duration_in_seconds = 2.5, show=False)
+		[q0_filtered, q1_filtered]  = feat_to_positions_fcn(features, timestep=0.005, cycle_duration_in_seconds = 2.5, show=True)
 		#import pdb; pdb.set_trace()
 		q0_filtered_10 = np.tile(q0_filtered,10)
 		q1_filtered_10 = np.tile(q1_filtered,10)
